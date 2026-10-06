@@ -6,6 +6,7 @@
 #include "hal_i2c.h"
 #include "app_task_sensor.h"
 #include "app_task_storage.h"
+#include "app_task_supervisor.h"
 
 void SystemClock_Config(void);
 static void MX_GPIO_Init(void);
@@ -13,7 +14,7 @@ static void MX_GPIO_Init(void);
 
 QueueHandle_t queue_sample = NULL;
 
-
+QueueHandle_t health_queue = NULL;
 
 
 int main(void)
@@ -36,6 +37,7 @@ int main(void)
 
     queue_sample = xQueueCreate(10, sizeof(syste));
 
+    health_queue = xQueueCreate(10, sizeof(HealthReport_t));
 
 
     if (xTaskCreate(Task_Main, "Main",384,  NULL, 3,NULL)!= pdPASS) {

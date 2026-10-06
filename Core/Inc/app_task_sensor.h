@@ -13,6 +13,7 @@
 #include "FreeRTOS.h"
 #include "task.h"
 #include "main.h"
+#include "app_task_supervisor.h"
 
 
 

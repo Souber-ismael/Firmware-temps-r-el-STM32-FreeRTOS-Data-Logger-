@@ -75,6 +75,7 @@ void Error_Handler(void);
 #define SWO_GPIO_Port GPIOB
 
 extern QueueHandle_t queue_sample;
+extern QueueHandle_t  health_queue;
 
 /* USER CODE BEGIN Private defines */
 
