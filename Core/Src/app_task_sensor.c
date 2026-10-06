@@ -10,15 +10,15 @@
 
 const char* get_sd_status_name(void)
 {
-
-        if(current_state == 0)
-        	return "SYS_OK";
-        if(current_state == 1)
-        	return "SYS_OK";
-
-
+    switch (current_state)
+    {
+        case STATE_RUNNING:        return "SYS_OK";
+        case STATE_SENSOR_DEGRADED:  return "SYS_degraded";
+        case STATE_BOTH_DEGRADED:     return "SYS_error";
+        case STATE_FATAL_ERROR:      return "SYS_fatal";
+        default:              return "SYS_unknown";
+    }
 }
-
 void Task_Main(void *argument)
 {
     char msg[64];

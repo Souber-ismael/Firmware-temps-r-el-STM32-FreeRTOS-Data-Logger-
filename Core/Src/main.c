@@ -44,9 +44,13 @@ int main(void)
     	 UART_TX_send_string(&huart1, "CREATE STORAGE FAIL 1\r\n");
     }
 
-    if (xTaskCreate(Task_Storage, "STOR", 512, NULL, 2, NULL) != pdPASS) {
+    if (xTaskCreate(Task_Storage, "STOR", 512, NULL, 1, NULL) != pdPASS) {
         UART_TX_send_string(&huart1, "CREATE STORAGE FAIL2\r\n");
     }
+
+    if (xTaskCreate(Task_Supervisor, "supervisor", 314, NULL, 2, NULL)!= pdPASS){
+    	UART_TX_send_string(&huart1, "CREATE STORAGE FAIL3\r\n");
+    	    }
 
     vTaskStartScheduler();
 

@@ -50,6 +50,7 @@ typedef struct {
 
 extern SystemState_t current_state;
 
+void Task_Supervisor(void *pvParameters);
 static void Supervisor_UpdateState(void);
 static void Supervisor_ProcessEvent(const HealthReport_t *report);
 
