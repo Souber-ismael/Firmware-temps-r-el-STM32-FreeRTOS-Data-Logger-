@@ -19,7 +19,6 @@ typedef enum {
     STATE_RUNNING,
     STATE_SENSOR_DEGRADED,
     STATE_STORAGE_DEGRADED,
-    STATE_BOTH_DEGRADED,     // les deux en même temps, cas à ne pas ignorer
     STATE_FATAL_ERROR
 } SystemState_t;
 
@@ -46,12 +45,12 @@ typedef struct {
 
 
 #define DEGRADED_TO_FATAL_MS   30000
-#define OK_STREAK_TO_RECOVER   3
+#define STREAK_TO_RECOVER_Sensor   3
+#define STREAK_TO_RECOVER_storage   1
 
 extern SystemState_t current_state;
 
 void Task_Supervisor(void *pvParameters);
-static void Supervisor_UpdateState(void);
-static void Supervisor_ProcessEvent(const HealthReport_t *report);
+
 
 #endif /* INC_APP_TASK_SUPERVISOR_H_ */
