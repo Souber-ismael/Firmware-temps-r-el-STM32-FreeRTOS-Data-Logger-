@@ -1,10 +1,13 @@
 ﻿#include "uart_ll.h"
 #include <stdio.h>
 #include "string.h"
+#include "FreeRTOS.h"
+#include "cmsis_os.h"
 
 UART_HandleTypeDef huart1;
 DMA_HandleTypeDef hdma1;
 volatile  uint8_t uart_tx_done =1;
+TaskHandle_t uartTxTaskHandle = NULL;
 
 UartDmaStatus MX_USART1_UART_Init(void) {
 
@@ -57,34 +60,39 @@ UartDmaStatus MX_DMA1_UART_INIT(void){
 
 
 
-void HAL_UART_TxCpltCallback(UART_HandleTypeDef *huart){
-	 if (huart->Instance == USART1)
-	    {
-	        uart_tx_done = 1;   // ou xSemaphoreGiveFromISR()
-	    }
-}
 
+
+void HAL_UART_TxCpltCallback(UART_HandleTypeDef *huart){
+    if(huart == &huart1){ // vérifie ton uart
+        BaseType_t xHigherPriorityTaskWoken = pdFALSE;
+        vTaskNotifyGiveFromISR(uartTxTaskHandle, &xHigherPriorityTaskWoken);
+        portYIELD_FROM_ISR(xHigherPriorityTaskWoken);
+    }
+}
 
 UartDmaStatus UART_TX_send_string(UART_HandleTypeDef *huart, const char *str)
 {
     static uint8_t tx_buf[UART_TX_BUF_SIZE];
-    HAL_StatusTypeDef ret;
     uint16_t len = (uint16_t)strlen(str);
 
     if (len == 0 || len >= sizeof(tx_buf))
         return UART_DMA_INVALID_PARAMETER;
 
-    if (!uart_tx_done)
-	return UART_DMA_BUSY; /* wait before touching the static buffer */
+    if(huart->gState != HAL_UART_STATE_READY) // check avant
+        return UART_DMA_BUSY;
 
-    uart_tx_done = 0;
     memcpy(tx_buf, str, len);
-    ret = HAL_UART_Transmit_DMA(huart, tx_buf, len);
+    uartTxTaskHandle = xTaskGetCurrentTaskHandle(); // set AVANT de lancer
 
-    if (ret == HAL_OK)
-        return UART_DMA_OK;
+    if(HAL_UART_Transmit_DMA(huart, tx_buf, len) != HAL_OK){
+        return UART_DMA_ERROR;
+    }
 
-    uart_tx_done = 1;  /* debloquer le flag si DMA echoue */
-    return UART_DMA_ERROR;
+    // on attend QUE si DMA bien lancé
+    if (ulTaskNotifyTake(pdTRUE, pdMS_TO_TICKS(2000)) == 0)
+    {
+        return UART_DMA_BUSY; // timeout, callback jamais venu
+    }
+
+    return UART_DMA_OK;
 }
-

@@ -24,6 +24,29 @@ char* get_sd_status_name(void) {
 		return "SYS_unknown";
 	}
 }
+
+
+
+
+char* get_sensor_status_name(SensorStatus r1) {
+	switch (r1) {
+	case SENSOR_STATUS_OK:
+		return "Sensor_OK";
+	case SENSOR_STATUS_NOT_FOUND:
+		return "Sensor_not_found";
+	case SENSOR_COMMUNICATION_ERROR:
+		return "Sensor_i2c_error";
+	case SENSOR_STATUS_INVALID_DATA:
+		return "Sensor_invalide data";
+	case SENSOR_STATUS_BUSY :
+		return "Sensor_busy";
+	case SENSOR_NOT_CALIBRATED:
+		return "Sensor_notcalibrated";
+	default:
+		return "Sensor_unknown";
+
+	}
+}
 void Task_Main(void *argument) {
 	char msg[64];
 	syste s1;
@@ -74,7 +97,7 @@ void Task_Main(void *argument) {
 
 		case STATE_STORAGE_DEGRADED:
 
-			UART_TX_send_string(&huart1, "state storage degraded \r\n");
+			UART_TX_send_string(&huart1, "storage degraded = \r\n");
 			vTaskDelay(pdMS_TO_TICKS(3000));
 			break;
 		case STATE_FATAL_ERROR:
@@ -93,6 +116,7 @@ void Task_Main(void *argument) {
 
 void funcprepar(syste s1, HealthReport_t *report, char *s, size_t size) {
 	char *a = get_sd_status_name();
+	char *b=get_sensor_status_name(s1.st);
 	if (s1.st == SENSOR_STATUS_OK) {
 		report->event = SYS_OK;
 		report->last_error = 0;
@@ -103,6 +127,6 @@ void funcprepar(syste s1, HealthReport_t *report, char *s, size_t size) {
 		report->event = SYS_SENSOR_DEGRADED;
 		report->last_error = (uint8_t) s1.st;
 
-		snprintf(s, size, "%s AHT20_Read = %d\r\n", a, (uint8_t) s1.st);
+		snprintf(s, size, "%s erreur = %s\r\n", a, b);
 	}
 }

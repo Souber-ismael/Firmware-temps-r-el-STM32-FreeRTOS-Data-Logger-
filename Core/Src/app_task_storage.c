@@ -11,6 +11,39 @@ static uint8_t write_buffer[512];
 static uint16_t buffer_offset = 0;
 void function(HealthReport_t *report);
 
+
+char* get_storage_status_name(uint8_t r1) {
+	switch (r1) {
+	case SD_OK:
+		return "Storage_ok";
+	case SD_ERROR:
+		return "Storage_spi_error";
+	case SD_TIMEOUT:
+		return "Storage_spi_timeout";
+	case SD_BUSY:
+		return "Storage_spi_busy";
+	case SD_NOT_READY :
+		return "Storage_not_ready";
+	case SD_ERROR_TIMEOUT:
+		return "Storage_sd_timeout";
+	case SD_ERR_DATA_TOKEN:
+			return "Storage_err_data";
+	case SD_ERROR_CDM:
+			return "Storage_err_cmd";
+	case SD_ERR_RESPONSE:
+			return "Storage_err_response";
+	case SD_ERR_WRITE_TIMEOUT:
+			return "Storage_err_write";
+	case SD_NOT_FOUND :
+			return "Storage_not_found";
+
+	default:
+		return "Sensor_unknown";
+
+	}
+}
+
+
 void Task_Storage(void *pvParameters) {
 
 	SD_Init();
@@ -18,6 +51,7 @@ void Task_Storage(void *pvParameters) {
 
 	syste sample;
 	HealthReport_t report;
+	char *c;
 
 	report.source = HEALTH_SRC_STORAGE;
 	for (;;) {
@@ -41,10 +75,12 @@ void Task_Storage(void *pvParameters) {
 
 		case STATE_STORAGE_DEGRADED:
 			function(&report);
-			if(report.event = SYS_OK){
+			if(report.event == SYS_OK){
 			xQueueSend(health_queue, &report, 0);
 			     break;
 			}
+            c = get_storage_status_name(report.last_error);
+            UART_TX_send_string(&huart1, c);
 			xQueueSend(health_queue, &report, 0);
 			vTaskDelay(5000);
 			break;

@@ -4,12 +4,15 @@
 #include "stm32f1xx.h"
 #include "stm32f1xx_hal.h"
 #include <stdint.h>
+#include "FreeRTOS.h"
+#include "cmsis_os.h"
 
 #define UART_TX_BUF_SIZE  128
 
 extern UART_HandleTypeDef huart1;
 extern DMA_HandleTypeDef hdma1;
 extern volatile uint8_t uart_tx_done;
+extern TaskHandle_t uartTxTaskHandle;
 
 typedef enum
 {
@@ -18,6 +21,7 @@ typedef enum
     DMA_ERROR,
     UART_DMA_ERROR,
     UART_DMA_BUSY,
+	UART_DMA_MUTEX_TIMEOUT,
     UART_DMA_INVALID_PARAMETER
 } UartDmaStatus;
 

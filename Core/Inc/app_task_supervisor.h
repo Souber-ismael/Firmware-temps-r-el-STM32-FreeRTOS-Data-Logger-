@@ -13,6 +13,7 @@
 #include "FreeRTOS.h"
 #include "task.h"
 #include "stdbool.h"
+#include "uart_ll.h"
 
 typedef enum {
     STATE_INIT,
@@ -44,7 +45,7 @@ typedef struct {
 
 
 
-#define DEGRADED_TO_FATAL_MS   30000
+#define DEGRADED_TO_FATAL_MS   40000
 #define STREAK_TO_RECOVER_Sensor   3
 #define STREAK_TO_RECOVER_storage   1
 

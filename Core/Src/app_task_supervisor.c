@@ -16,7 +16,7 @@ static bool sensor_ok;
 static bool storage_ok = true;
 
 static uint32_t sensor_ok_count = 0;
-static uint32_t storage_ok_count = 3;
+static uint32_t storage_ok_count = 0;
 
 static TickType_t sensor_degraded_since = 0;
 static TickType_t storage_degraded_since = 0;
@@ -31,11 +31,41 @@ void Task_Supervisor(void *pvParameters) {
 	HealthReport_t report;
 
 	for (;;) {
-		if (xQueueReceive(health_queue, &report, pdMS_TO_TICKS(100)) == pdTRUE) {
-			Supervisor_ProcessEvent(&report);
-		}
+		switch (current_state) {
+				case STATE_RUNNING:
+					if (xQueueReceive(health_queue, &report, pdMS_TO_TICKS(100)) == pdTRUE) {
+								Supervisor_ProcessEvent(&report);
+							}
 
-		Supervisor_UpdateState();
+							Supervisor_UpdateState();
+					break;
+
+				case STATE_SENSOR_DEGRADED:
+					if (xQueueReceive(health_queue, &report, pdMS_TO_TICKS(100)) == pdTRUE) {
+								Supervisor_ProcessEvent(&report);
+							}
+
+							Supervisor_UpdateState();
+
+					break;
+
+				case STATE_STORAGE_DEGRADED:
+					if (xQueueReceive(health_queue, &report, pdMS_TO_TICKS(100)) == pdTRUE) {
+								Supervisor_ProcessEvent(&report);
+							}
+
+							Supervisor_UpdateState();
+
+					break;
+				case STATE_FATAL_ERROR:
+                      vTaskDelay(pdMS_TO_TICKS(3000));
+					break;
+				default:
+					vTaskDelay(pdMS_TO_TICKS(3000));
+					break;
+				}
+
+
 	}
 }
 
@@ -47,12 +77,14 @@ static void Supervisor_ProcessEvent(const HealthReport_t *report) {
 			sensor_ok = true;
 			sensor_ok_count++;
 		} else {
-			sensor_degraded_since = xTaskGetTickCount();
 			sensor_ok = false;
 			sensor_ok_count = 0;
 			sensor_last_error = report->last_error;
 			if(current_state != STATE_STORAGE_DEGRADED)
 			current_state = STATE_SENSOR_DEGRADED;
+			if(sensor_degraded_since == 0){
+				sensor_degraded_since = xTaskGetTickCount();
+			}
 		}
 
 		break;
@@ -63,12 +95,13 @@ static void Supervisor_ProcessEvent(const HealthReport_t *report) {
 			storage_ok = true;
 			storage_ok_count++;
 		} else {
-			storage_degraded_since = xTaskGetTickCount();
 			storage_ok = false;
 			storage_ok_count = 0;
 			storage_last_error = report->last_error;
 			if(current_state != STATE_SENSOR_DEGRADED)
 			   current_state = STATE_STORAGE_DEGRADED;
+			if(storage_degraded_since == 0)
+			storage_degraded_since = xTaskGetTickCount();
 		}
 
 		break;
