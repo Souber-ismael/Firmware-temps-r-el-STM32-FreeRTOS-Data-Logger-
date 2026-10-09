@@ -15,6 +15,7 @@
 #include "app_task_sensor.h"
 #include "app_task_supervisor.h"
 #include "string.h"
+#include "watchdog.h"
 
 
 void  Task_Storage (void *argument);

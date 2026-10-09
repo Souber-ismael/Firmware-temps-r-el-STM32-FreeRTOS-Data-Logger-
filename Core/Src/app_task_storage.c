@@ -54,49 +54,59 @@ void Task_Storage(void *pvParameters) {
 	char *c;
 
 	report.source = HEALTH_SRC_STORAGE;
+
 	for (;;) {
 		switch (current_state) {
+
 		case STATE_RUNNING:
 			if (xQueueReceive(queue_sample, &sample, 100) == pdTRUE) {
-				if (sample.st != SENSOR_STATUS_OK)
-					continue;
-				memcpy(&write_buffer[buffer_offset], &sample, sizeof(syste));
-				buffer_offset += sizeof(syste);
-				if (buffer_offset + sizeof(syste) > 512) {
-					function(&report);
-					xQueueSend(health_queue, &report, 0);
+				if (sample.st == SENSOR_STATUS_OK) {
+					memcpy(&write_buffer[buffer_offset], &sample, sizeof(syste));
+					buffer_offset += sizeof(syste);
+
+					if (buffer_offset + sizeof(syste) > 512) {
+						function(&report);
+						xQueueSend(health_queue, &report, 0);
+					}
 				}
 			}
+			// ← Toujours set le bit, même si pas de sample
+			xEventGroupSetBits(wdEventGroup, WD_BIT_STORAGE);
 			break;
+
 		case STATE_SENSOR_DEGRADED:
+			xEventGroupSetBits(wdEventGroup, WD_BIT_STORAGE);
 			HAL_GPIO_TogglePin(GPIOA, GPIO_PIN_6);
 			vTaskDelay(1000);
 			break;
 
 		case STATE_STORAGE_DEGRADED:
 			function(&report);
-			if(report.event == SYS_OK){
 			xQueueSend(health_queue, &report, 0);
-			     break;
+
+			if (report.event != SYS_OK) {
+				c = get_storage_status_name(report.last_error);
+				UART_TX_send_string(&huart1, c);
 			}
-            c = get_storage_status_name(report.last_error);
-            UART_TX_send_string(&huart1, c);
-			xQueueSend(health_queue, &report, 0);
+
+			xEventGroupSetBits(wdEventGroup, WD_BIT_STORAGE);
 			vTaskDelay(5000);
 			break;
+
 		case STATE_FATAL_ERROR:
+			xEventGroupSetBits(wdEventGroup, WD_BIT_STORAGE);
 			HAL_GPIO_TogglePin(GPIOA, GPIO_PIN_6);
-			vTaskDelay(10000);
+			vTaskDelay(2000);
 			break;
 
 		default:
+			xEventGroupSetBits(wdEventGroup, WD_BIT_STORAGE);  // ← important
 			HAL_GPIO_TogglePin(GPIOA, GPIO_PIN_6);
 			vTaskDelay(2000);
 			break;
 		}
 	}
 }
-
 	void function(HealthReport_t *report) {
 
 		SD_Status ret;

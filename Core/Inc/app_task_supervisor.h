@@ -13,6 +13,7 @@
 #include "FreeRTOS.h"
 #include "task.h"
 #include "stdbool.h"
+#include "watchdog.h"
 #include "uart_ll.h"
 
 typedef enum {

@@ -30,13 +30,14 @@ static void supervisor_ok_storage(void);
 void Task_Supervisor(void *pvParameters) {
 	HealthReport_t report;
 
+
 	for (;;) {
 		switch (current_state) {
 				case STATE_RUNNING:
 					if (xQueueReceive(health_queue, &report, pdMS_TO_TICKS(100)) == pdTRUE) {
 								Supervisor_ProcessEvent(&report);
 							}
-
+					       HAL_IWDG_Refresh(&hiwdg);
 							Supervisor_UpdateState();
 					break;
 
@@ -44,7 +45,7 @@ void Task_Supervisor(void *pvParameters) {
 					if (xQueueReceive(health_queue, &report, pdMS_TO_TICKS(100)) == pdTRUE) {
 								Supervisor_ProcessEvent(&report);
 							}
-
+					        watchdog_refresh();
 							Supervisor_UpdateState();
 
 					break;
@@ -53,12 +54,13 @@ void Task_Supervisor(void *pvParameters) {
 					if (xQueueReceive(health_queue, &report, pdMS_TO_TICKS(100)) == pdTRUE) {
 								Supervisor_ProcessEvent(&report);
 							}
-
+					     watchdog_refresh();
 							Supervisor_UpdateState();
 
 					break;
 				case STATE_FATAL_ERROR:
-                      vTaskDelay(pdMS_TO_TICKS(3000));
+					   watchdog_refresh();
+                      vTaskDelay(pdMS_TO_TICKS(2000));
 					break;
 				default:
 					vTaskDelay(pdMS_TO_TICKS(3000));
@@ -133,6 +135,21 @@ static void Supervisor_UpdateState(void) {
 			break;
 	}
 
+}
+
+void watchdog_refresh(void){
+	EventBits_t bits = xEventGroupWaitBits(
+	        wdEventGroup,
+	        WD_ALL_BITS,
+	        pdTRUE, // clear après lecture
+	        pdTRUE, // attend TOUS les bits
+	        pdMS_TO_TICKS(2000)
+	    );
+
+	 if((bits & WD_ALL_BITS) == WD_ALL_BITS){
+	      // tout le monde a répondu, même en DEGRADED
+	      HAL_IWDG_Refresh(&hiwdg); // on nourrit, système vivant
+	    }
 }
 
 

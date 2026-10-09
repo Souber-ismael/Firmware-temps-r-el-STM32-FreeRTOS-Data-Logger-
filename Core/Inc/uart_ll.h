@@ -11,7 +11,6 @@
 
 extern UART_HandleTypeDef huart1;
 extern DMA_HandleTypeDef hdma1;
-extern volatile uint8_t uart_tx_done;
 extern TaskHandle_t uartTxTaskHandle;
 
 typedef enum

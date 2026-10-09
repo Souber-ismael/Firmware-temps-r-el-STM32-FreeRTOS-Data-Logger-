@@ -7,6 +7,7 @@
 #include "app_task_sensor.h"
 #include "app_task_storage.h"
 #include "app_task_supervisor.h"
+#include "watchdog.h"
 
 void SystemClock_Config(void);
 static void MX_GPIO_Init(void);
@@ -24,7 +25,6 @@ int main(void)
     MX_GPIO_Init();
     MX_USART1_UART_Init();
     MX_DMA1_UART_INIT();
-    uart_tx_done = 1;
 
     MX_I2CGPIO_INIT();
     MX_I2C1_INIT();
@@ -33,6 +33,7 @@ int main(void)
 
     if(MX_SPI_INIT() == SPI_OK)
 
+    	IWDG_INIT();
 
 
     queue_sample = xQueueCreate(10, sizeof(syste));
@@ -79,6 +80,7 @@ void SystemClock_Config(void)
     RCC_ClkInitStruct.APB2CLKDivider = RCC_HCLK_DIV1;
     if (HAL_RCC_ClockConfig(&RCC_ClkInitStruct, FLASH_LATENCY_2) != HAL_OK) { Error_Handler(); }
 }
+
 
 
 static void MX_GPIO_Init(void)

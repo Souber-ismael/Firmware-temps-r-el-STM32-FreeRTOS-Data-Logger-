@@ -6,7 +6,6 @@
 
 UART_HandleTypeDef huart1;
 DMA_HandleTypeDef hdma1;
-volatile  uint8_t uart_tx_done =1;
 TaskHandle_t uartTxTaskHandle = NULL;
 
 UartDmaStatus MX_USART1_UART_Init(void) {

@@ -57,7 +57,7 @@ void Task_Main(void *argument) {
 		snprintf(msg, sizeof(msg), "[ERR] AHT20_Init = %d\r\n",
 				(uint8_t) s1.st);
 		UART_TX_send_string(&huart1, msg);
-		vTaskSuspend(NULL); /* bloque sans boucle d'erreur */
+		current_state =STATE_FATAL_ERROR;
 	}
 
 	report.source = HEALTH_SRC_SENSOR;
@@ -73,6 +73,7 @@ void Task_Main(void *argument) {
 
 			UART_TX_send_string(&huart1, msg);
 
+			xEventGroupSetBits(wdEventGroup, WD_BIT_SENSOR);
 			xQueueSend(health_queue, &report, 0);
 
 			xQueueSend(queue_sample, &s1, 0);
@@ -87,6 +88,7 @@ void Task_Main(void *argument) {
 			funcprepar(s1, &report, msg, sizeof(msg));
 
 			UART_TX_send_string(&huart1, msg);
+			xEventGroupSetBits(wdEventGroup, WD_BIT_SENSOR);
 
 			xQueueSend(health_queue, &report, 0);
 
@@ -96,14 +98,14 @@ void Task_Main(void *argument) {
 			break;
 
 		case STATE_STORAGE_DEGRADED:
+			xEventGroupSetBits(wdEventGroup, WD_BIT_SENSOR);
 
-			UART_TX_send_string(&huart1, "storage degraded = \r\n");
-			vTaskDelay(pdMS_TO_TICKS(3000));
+			vTaskDelay(pdMS_TO_TICKS(2000));
 			break;
 		case STATE_FATAL_ERROR:
 			UART_TX_send_string(&huart1, "state :FATAL \r\n");
-
-			vTaskDelay(pdMS_TO_TICKS(3000));
+			xEventGroupSetBits(wdEventGroup, WD_BIT_SENSOR);
+			vTaskDelay(pdMS_TO_TICKS(2000));
 			break;
 		default:
 			UART_TX_send_string(&huart1, "state :default \r\n");
