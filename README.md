@@ -1,4 +1,4 @@
-# Firmware-temps-r-el-STM32-FreeRTOS-Data-Logger-
+# Firmware-temps-reel-STM32-FreeRTOS-Data-Logger-
 Développement d’un système embarqué autonome permettant l’acquisition, l’horodatage et l’enregistrement de données environnementales sur carte micro-SD avec une architecture temps réel sous FreeRTOS.
 
 # SASE — Système d'Acquisition et de Stockage Environnemental
@@ -173,12 +173,12 @@ Tests réalisés par injection de pannes :
 
 | # | Scénario | Résultat attendu | Résultat |
 |---|---|---|---|
-| 1 | Capteur débranché 5 s puis rebranché | `SENSOR_DEGRADED` puis retour `RUNNING`, sans reset | à renseigner |
-| 2 | Capteur débranché plus de 30 s | `FATAL`, reset watchdog, reprise au bon bloc | à renseigner |
-| 3 | Carte SD retirée | `STORAGE_DEGRADED`, puis `FATAL` au-delà de 30 s | à renseigner |
-| 4 | Boucle infinie dans `Task_Main` | Reset par watchdog | à renseigner |
+| 1 | Capteur débranché 5 s puis rebranché | `SENSOR_DEGRADED` puis retour `RUNNING`, sans reset |3 fois Sensor_OK |
+| 2 | Capteur débranché plus de 30 s | `FATAL`, reset watchdog, reprise au bon bloc | Status_fatal |
+| 3 | Carte SD retirée | `STORAGE_DEGRADED`, puis `FATAL` au-delà de 30 s | idem |
+| 4 | Boucle infinie dans `Task_Main` | Reset par watchdog |Validé |
 | 5 | Écriture puis relecture d'un bloc SD | Contenu identique | validé |
-| 6 | Coupure d'alimentation et redémarrage | Reprise au bloc suivant | à renseigner |
+| 6 | Coupure d'alimentation et redémarrage | Reprise au bloc suivant | validé |
 
 ## Problèmes rencontrés et leçons
 
