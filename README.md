@@ -30,6 +30,7 @@ Le projet vise une démarche proche de l'industrie : drivers écrits sans biblio
   2. Architecture système
 2.1 Diagramme de blocs matériel
 
+```mermaid
 graph LR
     subgraph ALIM["Alimentation"]
         P5["USB / 5V"] --> LDO["LDO 3.3V"]
