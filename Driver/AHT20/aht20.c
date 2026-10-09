@@ -1,4 +1,4 @@
-#include "ath20.h"
+#include "aht20.h"
 #include "hal_i2c.h"
 #include "uart_ll.h"
 

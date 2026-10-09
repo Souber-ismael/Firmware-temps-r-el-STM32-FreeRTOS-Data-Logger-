@@ -8,8 +8,8 @@
 #ifndef INC_APP_TASK_SENSOR_H_
 #define INC_APP_TASK_SENSOR_H_
 
+#include "aht20.h"
 #include "uart_ll.h"
-#include "ath20.h"
 #include "FreeRTOS.h"
 #include "task.h"
 #include "main.h"
