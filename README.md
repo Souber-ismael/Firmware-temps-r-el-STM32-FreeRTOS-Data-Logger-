@@ -27,8 +27,8 @@ Le projet vise une démarche proche de l'industrie : drivers écrits sans biblio
 - Au redémarrage, l'écriture reprend au bloc suivant (position persistée sur la carte).
 - Si une panne dure trop longtemps, le système cesse de nourrir le watchdog et redémarre proprement.
 
-  2. Architecture système
-2.1 Diagramme de blocs matériel
+
+## Architecture Diagramme de blocs matériel
 
 ```mermaid
 graph LR
