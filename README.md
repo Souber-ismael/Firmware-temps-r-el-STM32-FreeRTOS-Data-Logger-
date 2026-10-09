@@ -27,6 +27,38 @@ Le projet vise une démarche proche de l'industrie : drivers écrits sans biblio
 - Au redémarrage, l'écriture reprend au bloc suivant (position persistée sur la carte).
 - Si une panne dure trop longtemps, le système cesse de nourrir le watchdog et redémarre proprement.
 
+  2. Architecture système
+2.1 Diagramme de blocs matériel
+
+graph LR
+    subgraph ALIM["Alimentation"]
+        P5["USB / 5V"] --> LDO["LDO 3.3V"]
+    end
+
+    subgraph MCU["STM32F103RB — Cortex-M3 @ 64 MHz (HSI×16) + FreeRTOS"]
+        I2C1["I2C1<br/>PB6 = SCL / PB7 = SDA"]
+        SPI2["SPI2<br/>PB13 = SCK / PB14 = MISO<br/>PB15 = MOSI / PA4 = CS"]
+        USART1["USART1 + DMA1 Ch4<br/>PA9 = TX / PA10 = RX"]
+        IWDG["IWDG<br/>timeout ~10 s"]
+        GPIO["GPIO"]
+    end
+
+    AHT["Capteur AHT20<br/>Température + Humidité<br/>I2C, alim 3.3V"]
+    SD["microSD<br/>Stockage des mesures<br/>SPI mode 0, alim 3.3V"]
+    BT["Module BLE HC-05<br/>Debug + affichage mesures"]
+    LEDS["LED PA5 = état système<br/>LED PA6 = heartbeat supervisor"]
+
+    LDO --> MCU
+    LDO --> AHT
+    LDO --> SD
+    LDO --> BT
+
+    AHT -->|"SDA/SCL"| I2C1
+    SD -->|"MOSI/MISO/SCK/CS"| SPI2
+    BT -->|"TX/RX"| USART1
+    LEDS --> GPIO
+    IWDG -->|"Reset système"| MCU
+
 ## Architecture logicielle
 
 ```mermaid
