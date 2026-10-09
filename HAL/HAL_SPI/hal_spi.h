@@ -28,6 +28,6 @@ void SD_CS_LOW(void);
 void SD_CS_HIGH(void);
 SPI_STATUS SPI_Tx(uint8_t *tx , uint16_t size);
 SPI_STATUS SPI_TxRx(uint8_t *tx, uint8_t *rx);
-void SD_SetHighSpeed(void);
+SPI_STATUS SD_SetHighSpeed(void);
 
 #endif /* INC_HAL_SPI_H_ */
