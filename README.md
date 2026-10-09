@@ -59,7 +59,7 @@ graph LR
     BT -->|"TX/RX"| USART1
     LEDS --> GPIO
     IWDG -->|"Reset système"| MCU
-
+```
 ## Architecture logicielle
 
 ```mermaid
