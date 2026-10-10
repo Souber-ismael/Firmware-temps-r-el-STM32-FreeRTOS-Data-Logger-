@@ -192,9 +192,11 @@ Tests réalisés par injection de pannes :
 ## À faire
 
 - Ré-initialisation automatique de la SD et bus recovery SPI.
-- Remplacer le flag `uart_tx_done` par un sémaphore binaire (avec mutex si plusieurs tâches écrivent sur l'UART).
-- Tests unitaires sur PC (CRC, conversions, machine à états) et analyse statique.
+- Ré-initialisation automatique de la capteur et bus recovery I2C.
 - Relecture de l'historique et commandes via la liaison Bluetooth.
+
+## 📸 Aperçu du projet
+![Diagramme de blocs matériel]([docs/images/schema_blocs.png](https://github.com/Souber-ismael/Firmware-temps-r-el-STM32-FreeRTOS-Data-Logger-/blob/c3ba38e051571a9f2593c9d8b6af6b843db849e5/image/WhatsApp%20Image%202026-10-10%20at%2011.08.36%20AM.jpeg))
 
 ## Compilation et flash
 
