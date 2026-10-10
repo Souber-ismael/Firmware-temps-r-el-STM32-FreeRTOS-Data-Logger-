@@ -196,7 +196,7 @@ Tests réalisés par injection de pannes :
 - Relecture de l'historique et commandes via la liaison Bluetooth.
 
 ## 📸 Aperçu du projet
-![Diagramme de blocs matériel]([docs/images/schema_blocs.png](https://github.com/Souber-ismael/Firmware-temps-r-el-STM32-FreeRTOS-Data-Logger-/blob/c3ba38e051571a9f2593c9d8b6af6b843db849e5/image/WhatsApp%20Image%202026-10-10%20at%2011.08.36%20AM.jpeg))
+![Diagramme de blocs matériel](<img width="1530" height="2040" alt="image" src="https://github.com/user-attachments/assets/2a3a40fb-97c3-4b7c-a769-2f3307904608" />)
 
 ## Compilation et flash
 
