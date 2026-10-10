@@ -196,7 +196,7 @@ Tests réalisés par injection de pannes :
 - Relecture de l'historique et commandes via la liaison Bluetooth.
 
 ## 📸 Aperçu du projet
-![Diagramme de blocs matériel](image/WhatsApp Image 2026-10-10 at 11.08.36 AM.jpeg)
+![Diagramme de blocs matériel](image/2.jpeg)
 
 ## Compilation et flash
 
