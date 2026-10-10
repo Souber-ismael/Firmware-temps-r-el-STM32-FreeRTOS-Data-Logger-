@@ -194,9 +194,9 @@ Tests réalisés par injection de pannes :
 - Ré-initialisation automatique de la SD et bus recovery SPI.
 - Ré-initialisation automatique de la capteur et bus recovery I2C.
 - Relecture de l'historique et commandes via la liaison Bluetooth.
-![Diagramme de blocs matériel](<img width="1530" height="2040" alt="image" src="https://github.com/user-attachments/assets/2a3a40fb-97c3-4b7c-a769-2f3307904608" />)
+
 ## 📸 Aperçu du projet
-![](<img width="1530" height="2040" alt="image" src="https://github.com/user-attachments/assets/2a3a40fb-97c3-4b7c-a769-2f3307904608" />)
+![Diagramme de blocs matériel](image/2.jpeg)
 
 ## Compilation et flash
 
