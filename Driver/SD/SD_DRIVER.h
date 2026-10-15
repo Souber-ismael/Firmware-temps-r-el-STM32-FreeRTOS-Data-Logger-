@@ -18,6 +18,9 @@
 
 #include "stm32f1xx_hal.h"
 #include "hal_spi.h"
+#include "uart_ll.h"
+#include "string.h"
+#include "hal_spi.h"
 
 /**
  * @brief Codes de retour des fonctions du driver SD.

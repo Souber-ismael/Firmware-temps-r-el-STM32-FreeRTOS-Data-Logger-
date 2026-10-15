@@ -12,6 +12,9 @@ Release/
 *.cyclo
 *.srec
 
+# Tests hote (Unity + gcc)
+Tests/build/
+
 # IDE
 .metadata/
 .settings/

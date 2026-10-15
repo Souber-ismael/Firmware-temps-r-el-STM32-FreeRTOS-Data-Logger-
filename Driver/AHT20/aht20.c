@@ -53,7 +53,7 @@ SensorStatus AHT20_Init(void) {
 	return SENSOR_STATUS_OK;
 }
 
-SensorStatus AHT20_Read(uint8_t *temp_int, uint8_t *temp_frac, uint8_t *hum_int,
+SensorStatus AHT20_Read(int16_t *temp_int, uint8_t *temp_frac, uint8_t *hum_int,
 		uint8_t *hum_frac) {
 
 	uint8_t cmd[3] = { 0xAC, 0x33, 0x00 };
@@ -90,32 +90,7 @@ SensorStatus AHT20_Read(uint8_t *temp_int, uint8_t *temp_frac, uint8_t *hum_int,
 		}
 	}
 
-	// 5. Extraire les données
-	uint32_t rawHum = ((uint32_t) data[1] << 12) | ((uint32_t) data[2] << 4)
-			| (data[3] >> 4);
-
-	uint32_t rawTemp = ((uint32_t) (data[3] & 0x0F) << 16)
-			| ((uint32_t) data[4] << 8) | data[5];
-
-	// 6. Convertir
-	*hum_int = (uint8_t) ((rawHum * 100UL) / 1048576);
-	*hum_frac = (uint8_t) ((rawHum * 10000UL / 1048576) % 100);
-	*temp_int = (uint8_t) ((rawTemp * 200UL) / 1048576) - 50;
-	*temp_frac = (uint8_t) ((rawTemp * 20000UL / 1048576) % 100);
-
-	// Corriger fractions négatives
-	if (*temp_frac < 0)
-		*temp_frac = -(*temp_frac);
-	if (*hum_frac < 0)
-		*hum_frac = -(*hum_frac);
-
-	if ((*temp_int > SENSOR_TEMP_MAX) || (*temp_int < SENSOR_TEMP_MIN))
-		return SENSOR_STATUS_INVALID_DATA;
-
-	if ((*hum_int > SENSOR_HUM_MAX) || (*hum_int < SENSOR_HUM_MIN))
-		return SENSOR_STATUS_INVALID_DATA;
-
-	return SENSOR_STATUS_OK;
+	return(aht20_convert(data, temp_int, temp_frac, hum_int, hum_frac));
 
 }
 

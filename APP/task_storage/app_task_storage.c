@@ -29,18 +29,18 @@ static void Storage_FlushBlock(HealthReport_t *report);
 static char *get_storage_status_name(uint8_t r1)
 {
     switch (r1) {
-    case SD_OK:               return "Storage_ok";
-    case SD_ERROR:            return "Storage_spi_error";
-    case SD_TIMEOUT:          return "Storage_spi_timeout";
-    case SD_BUSY:             return "Storage_spi_busy";
-    case SD_NOT_READY:        return "Storage_not_ready";
-    case SD_ERROR_TIMEOUT:    return "Storage_sd_timeout";
-    case SD_ERR_DATA_TOKEN:   return "Storage_err_data";
-    case SD_ERROR_CDM:        return "Storage_err_cmd";
-    case SD_ERR_RESPONSE:     return "Storage_err_response";
-    case SD_ERR_WRITE_TIMEOUT: return "Storage_err_write";
-    case SD_NOT_FOUND:        return "Storage_not_found";
-    default:                  return "Storage_unknown";
+    case SD_OK:               return "Storage_ok \r\n";
+    case SD_ERROR:            return "Storage_spi_error \r\n";
+    case SD_TIMEOUT:          return "Storage_spi_timeout \r\n";
+    case SD_BUSY:             return "Storage_spi_busy \r\n";
+    case SD_NOT_READY:        return "Storage_not_ready \r\n";
+    case SD_ERROR_TIMEOUT:    return "Storage_sd_timeout \r\n";
+    case SD_ERR_DATA_TOKEN:   return "Storage_err_data \r\n";
+    case SD_ERROR_CDM:        return "Storage_err_cmd \r\n";
+    case SD_ERR_RESPONSE:     return "Storage_err_response \r\n";
+    case SD_ERR_WRITE_TIMEOUT: return "Storage_err_write \r\n";
+    case SD_NOT_FOUND:        return "Storage_not_found \r\n";
+    default:                  return "Storage_unknown \r\n";
     }
 }
 
@@ -66,22 +66,24 @@ void Task_Storage(void *pvParameters)
         switch (current_state) {
 
         case STATE_RUNNING:
-            /* Recoit une mesure (attente 100 ticks) et l ajoute au buffer */
             if (xQueueReceive(queue_sample, &sample, 100) == pdTRUE) {
                 if (sample.st == SENSOR_STATUS_OK) {
-                    memcpy(&write_buffer[buffer_offset], &sample, sizeof(syste));
-                    buffer_offset += sizeof(syste);
 
-                    /* Buffer plein : ecrit le bloc sur SD et rapporte le resultat */
+                    // Protection : si plus de place, on flush d'abord
                     if (buffer_offset + sizeof(syste) > 512) {
                         Storage_FlushBlock(&report);
                         xQueueSend(health_queue, &report, 0);
                     }
+
+                    // On n'écrit que s'il reste de la place
+                    if (buffer_offset + sizeof(syste) <= 512) {
+                        memcpy(&write_buffer[buffer_offset], &sample, sizeof(syste));
+                        buffer_offset += sizeof(syste);
+                    }
                 }
             }
-            /* Set le bit watchdog meme si aucun sample n etait disponible */
             xEventGroupSetBits(wdEventGroup, WD_BIT_STORAGE);
-            break;
+            break;;
 
         case STATE_SENSOR_DEGRADED:
             /* Capteur degrade : pas de nouvelles donnees, attend + heartbeat */
@@ -129,7 +131,7 @@ void Task_Storage(void *pvParameters)
 static void Storage_FlushBlock(HealthReport_t *report)
 {
     SD_Status ret;
-
+    report->source = HEALTH_SRC_STORAGE;
     ret = Storage_WriteSampleBlock(write_buffer);
 
     if (ret == SD_OK) {

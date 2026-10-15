@@ -19,7 +19,7 @@
 #include "FreeRTOS.h"
 #include "task.h"
 #include "main.h"
-#include "app_task_supervisor.h"
+#include "supervisor_logic.h"
 #include "watchdog.h"
 
 /**
@@ -32,7 +32,7 @@
  * @note    Taille : 5 octets. Aligne naturellement sur 1 octet.
  */
 typedef struct {
-    uint8_t      temp_int;   /**< Partie entiere de la temperature  (ex : 23 pour 23.45 C) */
+	int16_t      temp_int;   /**< Partie entiere de la temperature  (ex : 23 pour 23.45 C) */
     uint8_t      temp_frac;  /**< Fraction temperature sur 2 chiffres (ex : 45 pour 23.45) */
     uint8_t      hum_int;    /**< Partie entiere de l'humidite      (ex : 58 pour 58.12 %) */
     uint8_t      hum_frac;   /**< Fraction humidite sur 2 chiffres  (ex : 12 pour 58.12)   */

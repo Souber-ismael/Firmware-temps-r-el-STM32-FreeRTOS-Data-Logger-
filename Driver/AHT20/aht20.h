@@ -15,31 +15,10 @@
 #ifndef AHT20_H
 #define AHT20_H
 
-/** @defgroup AHT20_Config Configuration du capteur AHT20
- *  @{
- */
-#define AHT20_ADDR      0x38  /**< Adresse I2C du capteur AHT20 (fixe, non modifiable) */
-#define SENSOR_TEMP_MAX  85   /**< Temperature maximale valide en degres Celsius        */
-#define SENSOR_TEMP_MIN (-40) /**< Temperature minimale valide en degres Celsius        */
-#define SENSOR_HUM_MAX  100   /**< Humidite maximale valide en pourcentage              */
-#define SENSOR_HUM_MIN    0   /**< Humidite minimale valide en pourcentage              */
-/** @} */
 
+#include "aht20_types.h"
 #include "stm32f1xx_hal.h"
 #include "hal_i2c.h"
-
-/**
- * @brief Codes de retour des fonctions du driver AHT20.
- */
-typedef enum {
-    SENSOR_STATUS_OK = 0,        /**< Operation reussie                              */
-    SENSOR_STATUS_NOT_FOUND,     /**< Capteur absent sur le bus I2C (NACK)           */
-    SENSOR_COMMUNICATION_ERROR,  /**< Erreur de communication I2C (timeout, busy...) */
-    SENSOR_STATUS_INVALID_DATA,  /**< Mesure hors des plages physiques acceptables   */
-    SENSOR_STATUS_BUSY,          /**< Capteur occupé, mesure non disponible          */
-    SENSOR_STATUS_BUS_ERROR,     /**< Erreur generique du bus I2C                    */
-    SENSOR_NOT_CALIBRATED        /**< Capteur non calibre apres la commande 0xBE     */
-} SensorStatus;
 
 /**
  * @brief  Initialise le capteur AHT20.
@@ -79,7 +58,7 @@ SensorStatus AHT20_Init(void);
  * @retval SENSOR_STATUS_INVALID_DATA Valeurs hors plage physique.
  * @retval SENSOR_COMMUNICATION_ERROR Erreur I2C.
  */
-SensorStatus AHT20_Read(uint8_t *temp_int, uint8_t *temp_frac,
+SensorStatus AHT20_Read(int16_t *temp_int, uint8_t *temp_frac,
                          uint8_t *hum_int,  uint8_t *hum_frac);
 
 /**

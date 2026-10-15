@@ -112,7 +112,9 @@ void Task_Main(void *argument)
             break;
 
         default:
-            UART_TX_send_string(&huart1, "state :default \r\n");
+        	char buf[40];
+        	sprintf(buf, "BEFORE SWITCH state=%d\r\n", (int)current_state);
+        	UART_TX_send_string(&huart1, buf);
             vTaskDelay(pdMS_TO_TICKS(3000));
             break;
         }

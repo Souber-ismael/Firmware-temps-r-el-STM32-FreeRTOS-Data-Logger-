@@ -6,9 +6,7 @@
  */
 
 #include "SD_DRIVER.h"
-#include "uart_ll.h"
-#include "string.h"
-#include "hal_spi.h"
+
 
 static uint8_t sd_is_sdhc = 0;
 

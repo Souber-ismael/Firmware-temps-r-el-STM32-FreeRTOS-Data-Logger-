@@ -16,7 +16,7 @@
 #include "task.h"
 #include "storage.h"
 #include "app_task_sensor.h"
-#include "app_task_supervisor.h"
+#include "supervisor_logic.h"
 #include "string.h"
 #include "watchdog.h"
 

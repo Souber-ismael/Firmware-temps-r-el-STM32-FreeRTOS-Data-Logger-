@@ -69,15 +69,15 @@ int main(void)
     health_queue = xQueueCreate(10, sizeof(HealthReport_t));
 
     /* Creation des taches FreeRTOS */
-    if (xTaskCreate(Task_Main, "Main", 384, NULL, 3, NULL) != pdPASS) {
+    if (xTaskCreate(Task_Main, "Main", 384, NULL, 2, NULL) != pdPASS) {
         UART_TX_send_string(&huart1, "CREATE STORAGE FAIL 1\r\n");
     }
 
-    if (xTaskCreate(Task_Storage, "STOR", 512, NULL, 1, NULL) != pdPASS) {
+    if (xTaskCreate(Task_Storage, "STOR", 512, NULL,2, NULL) != pdPASS) {
         UART_TX_send_string(&huart1, "CREATE STORAGE FAIL2\r\n");
     }
 
-    if (xTaskCreate(Task_Supervisor, "supervisor", 314, NULL, 2, NULL) != pdPASS) {
+    if (xTaskCreate(Task_Supervisor, "supervisor", 512, NULL, 3, NULL) != pdPASS) {
         UART_TX_send_string(&huart1, "CREATE STORAGE FAIL3\r\n");
     }
 
@@ -86,7 +86,19 @@ int main(void)
 
     while (1) {}
 }
+void vApplicationStackOverflowHook(TaskHandle_t xTask, char *pcTaskName)
+{
+    UART_TX_send_string(&huart1, "\r\n!!! STACK OVERFLOW → ");
+    UART_TX_send_string(&huart1, pcTaskName);
+    UART_TX_send_string(&huart1, "\r\n");
+    while(1);
+}
 
+void vApplicationMallocFailedHook(void)
+{
+    UART_TX_send_string(&huart1, "\r\n!!! MALLOC FAILED\r\n");
+    while(1);
+}
 /**
  * @brief  Configure le bus d horloge systeme sur HSI x16 = 64 MHz.
  * @details Oscillateur : HSI (8 MHz interne).
