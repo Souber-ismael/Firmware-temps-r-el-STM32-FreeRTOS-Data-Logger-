@@ -1,0 +1,87 @@
+---
+:source:
+  :file: "../../Tests/test_supervisor/test_supervisor_logic.c"
+  :dirname: "../../Tests/test_supervisor"
+  :basename: test_supervisor_logic.c
+:successes:
+- :test: test_etat_initial_running
+  :line: 35
+  :message: ''
+  :unity_test_time: 0
+- :test: test_erreur_capteur_passe_en_sensor_degraded
+  :line: 40
+  :message: ''
+  :unity_test_time: 0
+- :test: test_erreur_stockage_passe_en_storage_degraded
+  :line: 47
+  :message: ''
+  :unity_test_time: 0
+- :test: test_rapport_null_ne_change_pas_letat
+  :line: 54
+  :message: ''
+  :unity_test_time: 0
+- :test: test_ok_capteur_en_running_reste_running
+  :line: 62
+  :message: ''
+  :unity_test_time: 0
+- :test: test_deux_ok_capteur_ne_suffisent_pas_a_recuperer
+  :line: 71
+  :message: ''
+  :unity_test_time: 0
+- :test: test_trois_ok_capteur_recuperent_running
+  :line: 80
+  :message: ''
+  :unity_test_time: 0
+- :test: test_une_erreur_capteur_casse_le_streak
+  :line: 90
+  :message: ''
+  :unity_test_time: 0
+- :test: test_un_ok_stockage_recupere_running
+  :line: 102
+  :message: ''
+  :unity_test_time: 0
+- :test: test_sensor_degraded_ignore_erreur_stockage_pour_letat
+  :line: 110
+  :message: ''
+  :unity_test_time: 0
+- :test: test_storage_degraded_ignore_erreur_capteur_pour_letat
+  :line: 118
+  :message: ''
+  :unity_test_time: 0
+- :test: test_timeout_capteur_des_t0_passe_en_fatal
+  :line: 126
+  :message: ''
+  :unity_test_time: 0
+- :test: test_timeout_capteur_40s_passe_en_fatal
+  :line: 134
+  :message: ''
+  :unity_test_time: 0
+- :test: test_juste_avant_timeout_capteur_reste_degraded
+  :line: 142
+  :message: ''
+  :unity_test_time: 0
+- :test: test_timeout_stockage_40s_passe_en_fatal
+  :line: 150
+  :message: ''
+  :unity_test_time: 0
+- :test: test_horloge_timeout_ne_redemarre_pas_sur_erreur_suivante
+  :line: 158
+  :message: ''
+  :unity_test_time: 0
+- :test: test_apres_recuperation_nouvelle_erreur_redevient_degraded
+  :line: 167
+  :message: ''
+  :unity_test_time: 0
+- :test: test_fatal_reste_fatal_sur_update
+  :line: 177
+  :message: ''
+  :unity_test_time: 0
+:failures: []
+:ignores: []
+:counts:
+  :total: 18
+  :passed: 18
+  :failed: 0
+  :ignored: 0
+:stdout: []
+:time: 0.045385400000668596

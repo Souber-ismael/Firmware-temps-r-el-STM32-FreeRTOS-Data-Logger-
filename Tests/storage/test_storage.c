@@ -122,15 +122,3 @@ void test_write_sample_wraps_at_end_of_log(void)
     TEST_ASSERT_EQUAL_UINT32(SD_LOG_START_BLOCK, current_block);
 }
 
-/* ---------- main ---------- */
-int main(void)
-{
-    UNITY_BEGIN();
-    RUN_TEST(test_init_valid_magic_restores_block);
-    RUN_TEST(test_init_bad_magic_resets_and_saves);
-    RUN_TEST(test_init_read_error_resets);
-    RUN_TEST(test_write_sample_advances_and_saves_meta);
-    RUN_TEST(test_write_sample_error_does_not_advance);
-    RUN_TEST(test_write_sample_wraps_at_end_of_log);
-    return UNITY_END();
-}

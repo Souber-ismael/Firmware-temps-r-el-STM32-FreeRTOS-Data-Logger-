@@ -114,12 +114,3 @@ void test_conversion_horsplage(void)
     TEST_ASSERT_EQUAL_UINT8(0, hum_frac);
 
 }
-int main(void)
-{
-    UNITY_BEGIN();
-    RUN_TEST(test_conversion_25_degres_50_pourcent);
-    RUN_TEST(test_conversion_minimal);
-    RUN_TEST(test_conversion_maximal);
-    RUN_TEST(test_conversion_horsplage);
-    return UNITY_END();
-}

@@ -184,26 +184,3 @@ void test_fatal_reste_fatal_sur_update(void)
     TEST_ASSERT_EQUAL(STATE_FATAL_ERROR, current_state);
 }
 
-int main(void)
-{
-    UNITY_BEGIN();
-    RUN_TEST(test_etat_initial_running);
-    RUN_TEST(test_erreur_capteur_passe_en_sensor_degraded);
-    RUN_TEST(test_erreur_stockage_passe_en_storage_degraded);
-    RUN_TEST(test_rapport_null_ne_change_pas_letat);
-    RUN_TEST(test_ok_capteur_en_running_reste_running);
-    RUN_TEST(test_deux_ok_capteur_ne_suffisent_pas_a_recuperer);
-    RUN_TEST(test_trois_ok_capteur_recuperent_running);
-    RUN_TEST(test_une_erreur_capteur_casse_le_streak);
-    RUN_TEST(test_un_ok_stockage_recupere_running);
-    RUN_TEST(test_sensor_degraded_ignore_erreur_stockage_pour_letat);
-    RUN_TEST(test_storage_degraded_ignore_erreur_capteur_pour_letat);
-    RUN_TEST(test_timeout_capteur_des_t0_passe_en_fatal);
-    RUN_TEST(test_timeout_capteur_40s_passe_en_fatal);
-    RUN_TEST(test_juste_avant_timeout_capteur_reste_degraded);
-    RUN_TEST(test_timeout_stockage_40s_passe_en_fatal);
-    RUN_TEST(test_horloge_timeout_ne_redemarre_pas_sur_erreur_suivante);
-    RUN_TEST(test_apres_recuperation_nouvelle_erreur_redevient_degraded);
-    RUN_TEST(test_fatal_reste_fatal_sur_update);
-    return UNITY_END();
-}
