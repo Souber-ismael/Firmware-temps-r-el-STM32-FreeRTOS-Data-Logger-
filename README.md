@@ -192,11 +192,11 @@ Tests réalisés par injection de pannes :
 ceedling test:all
 ```
 
-Les commandes exactes de compilation du firmware sont dans .github/workflows.
+Les commandes exactes de compilation du firmware sont dans `.github/workflows`.
 
 ## Outils
 
-GCC (arm-none-eabi-gcc pour la cible, GCC hôte pour les tests unitaires), Unity, Ceedling, GitHub Actions, FreeRTOS, HAL STM32.
+GCC (`arm-none-eabi-gcc` pour la cible, GCC hôte pour les tests unitaires), Unity, Ceedling, GitHub Actions, FreeRTOS, HAL STM32.
 
 ## Problèmes rencontrés et leçons
 
