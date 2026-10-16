@@ -186,13 +186,13 @@ Tests réalisés par injection de pannes :
 | 5 | Écriture puis relecture d'un bloc SD | Contenu identique | validé |
 | 6 | Coupure d'alimentation et redémarrage | Reprise au bloc suivant | validé |
 
-Lancer les tests unitaires en local :
+## Lancer les tests unitaires en local :
 
 ceedling test:all
 
 Les commandes exactes de compilation du firmware sont dans .github/workflows.
 
-Outils
+## Outils
 
 GCC (arm-none-eabi-gcc pour la cible, GCC hôte pour les tests unitaires), Unity, Ceedling, GitHub Actions, FreeRTOS, HAL STM32.
 
