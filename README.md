@@ -1,6 +1,3 @@
-# Firmware-temps-reel-STM32-FreeRTOS-Data-Logger-
-Développement d’un système embarqué autonome permettant l’acquisition, l’horodatage et l’enregistrement de données environnementales sur carte micro-SD avec une architecture temps réel sous FreeRTOS.
-
 # SASE — Système d'Acquisition et de Stockage Environnemental
 
 Enregistreur de température et d'humidité sur STM32F103RB, basé sur FreeRTOS. Il mesure, affiche et stocke les données sur carte microSD, avec une supervision logicielle et un watchdog matériel qui le remettent en route en cas de panne.
@@ -167,11 +164,14 @@ Le pointeur d'écriture est relu au démarrage et validé par le magic number (r
 | UART | `HAL_BUSY`, timeout | Local, sans impact sur l'état système |
 | Tâche bloquée | Heartbeat figé | Plus de kick, reset watchdog |
 
-Tests et CI
-Niveau	Outils	Périmètre
-Tests unitaires	Unity + Ceedling, exécutés sur l'hôte avec GCC	Logique indépendante du matériel
-Tests d'intégration	Sur cible, par injection de pannes	Comportement du système complet en situation de panne
-CI	GitHub Actions	Compilation du firmware, tests unitaires à chaque push
+
+## Tests et CI
+
+| Niveau | Outils | Périmètre |
+|---|---|---|
+| Tests unitaires | Unity + Ceedling, exécutés sur l'hôte avec GCC | Logique indépendante du matériel |
+| Tests d'intégration | Sur cible, par injection de pannes | Comportement du système complet en situation de panne |
+| CI | GitHub Actions | Compilation du firmware, tests unitaires à chaque push |
 
 ## Tests
 
