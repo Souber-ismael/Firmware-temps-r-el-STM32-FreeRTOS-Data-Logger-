@@ -188,7 +188,9 @@ Tests réalisés par injection de pannes :
 
 ## Lancer les tests unitaires en local :
 
+```
 ceedling test:all
+```
 
 Les commandes exactes de compilation du firmware sont dans .github/workflows.
 
