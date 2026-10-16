@@ -1,5 +1,7 @@
 # SASE — Environmental Acquisition and Storage System
 
+[🇫🇷 Version française](README.FR.md)
+
 A temperature and humidity data logger based on the **STM32F103RB** and **FreeRTOS**.  
 It measures, displays, and stores environmental data on a **microSD card**, with software supervision and a hardware watchdog that restarts the system in case of failure.
 
