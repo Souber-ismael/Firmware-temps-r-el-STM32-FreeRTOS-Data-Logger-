@@ -1,4 +1,4 @@
-.# SASE — Système d'Acquisition et de Stockage Environnemental
+# SASE — Système d'Acquisition et de Stockage Environnemental
 
 [🇬🇧 English version](README.md)
 
