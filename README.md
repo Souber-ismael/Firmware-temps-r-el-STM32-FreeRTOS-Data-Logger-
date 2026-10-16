@@ -167,6 +167,12 @@ Le pointeur d'écriture est relu au démarrage et validé par le magic number (r
 | UART | `HAL_BUSY`, timeout | Local, sans impact sur l'état système |
 | Tâche bloquée | Heartbeat figé | Plus de kick, reset watchdog |
 
+Tests et CI
+Niveau	Outils	Périmètre
+Tests unitaires	Unity + Ceedling, exécutés sur l'hôte avec GCC	Logique indépendante du matériel
+Tests d'intégration	Sur cible, par injection de pannes	Comportement du système complet en situation de panne
+CI	GitHub Actions	Compilation du firmware, tests unitaires à chaque push
+
 ## Tests
 
 Tests réalisés par injection de pannes :
@@ -179,6 +185,16 @@ Tests réalisés par injection de pannes :
 | 4 | Boucle infinie dans `Task_Main` | Reset par watchdog |Validé |
 | 5 | Écriture puis relecture d'un bloc SD | Contenu identique | validé |
 | 6 | Coupure d'alimentation et redémarrage | Reprise au bloc suivant | validé |
+
+Lancer les tests unitaires en local :
+
+ceedling test:all
+
+Les commandes exactes de compilation du firmware sont dans .github/workflows.
+
+Outils
+
+GCC (arm-none-eabi-gcc pour la cible, GCC hôte pour les tests unitaires), Unity, Ceedling, GitHub Actions, FreeRTOS, HAL STM32.
 
 ## Problèmes rencontrés et leçons
 
