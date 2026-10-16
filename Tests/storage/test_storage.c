@@ -122,3 +122,4 @@ void test_write_sample_wraps_at_end_of_log(void)
     TEST_ASSERT_EQUAL_UINT32(SD_LOG_START_BLOCK, current_block);
 }
 
+/* ---------- main ---------- */

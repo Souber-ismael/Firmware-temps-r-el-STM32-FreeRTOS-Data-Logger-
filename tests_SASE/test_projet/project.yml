@@ -14,7 +14,7 @@
   :ceedling_version: 1.1.10
 
   # optional features. If you don't need them, keep them turned off for performance
-  :use_mocks: TRUE
+  :use_mocks: FALSE
   :use_test_preprocessor: :none  # options are :none, :mocks, :tests, or :all
   :use_backtrace: :simple        # options are :none, :simple, or :gdb
 
@@ -99,12 +99,17 @@
   :test:
     - ../../Tests/test_aht20
     - ../../Tests/test_supervisor
+    - ../../Tests/storage
   :source:
     - ../../Driver/AHT20
     - ../../APP/task_supervisor
+    - ../../Driver/Storage
   :include:
     - ../../Driver/AHT20 # In simple projects, this entry often duplicates :source
     - ../../APP/task_supervisor
+    - ../../Driver/Storage
+    - ../../Driver/sd
+    - ../../Tests/Storage/fake
   :support: []
   :libraries: []
 
