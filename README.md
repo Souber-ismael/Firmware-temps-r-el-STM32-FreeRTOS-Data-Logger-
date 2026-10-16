@@ -1,36 +1,46 @@
-# SASE — Système d'Acquisition et de Stockage Environnemental
+# SASE — Environmental Acquisition and Storage System
 
-Enregistreur de température et d'humidité sur STM32F103RB, basé sur FreeRTOS. Il mesure, affiche et stocke les données sur carte microSD, avec une supervision logicielle et un watchdog matériel qui le remettent en route en cas de panne.
+A temperature and humidity data logger based on the **STM32F103RB** and **FreeRTOS**.  
+It measures, displays, and stores environmental data on a **microSD card**, with software supervision and a hardware watchdog that restarts the system in case of failure.
 
-Le projet vise une démarche proche de l'industrie : drivers écrits sans bibliothèque tierce, gestion explicite de chaque cas d'erreur, tests par injection de pannes.
+The project follows an industry-oriented approach:
 
-## Matériel
+- Drivers written without third-party libraries
+- Explicit handling of every error case
+- Fault-injection testing
+- CI with firmware build and unit tests
 
-| Fonction | Composant | Interface / Broches |
+## Features
+
+- Temperature and humidity acquisition every second using the AHT20 sensor
+- CRC verification of sensor measurements
+- Real-time display over UART / Bluetooth (HC-05)
+- Raw block storage on microSD, without a file system
+- Persistent write position across resets
+- FreeRTOS-based multitasking architecture
+- Hardware watchdog supervision using IWDG
+- Fault detection and graceful recovery
+- Unit tests with Unity and Ceedling
+- CI using GitHub Actions
+
+## Hardware
+
+| Function | Component | Interface / Pins |
 |---|---|---|
 | MCU | STM32F103RB (Nucleo), HSI ×16 = 64 MHz | — |
-| Capteur température/humidité | AHT20 | I2C1 : PB6 (SCL) / PB7 (SDA) |
-| Stockage | Module microSD | SPI2 : PB13 (SCK) / PB14 (MISO) / PB15 (MOSI), CS sur PA4 |
-| Debug et affichage des mesures | Module Bluetooth HC-05 | USART1 : PA9 / PA10, TX en DMA1 Channel 4 |
-| LED état système | LED | PA5 |
-| LED heartbeat du Supervisor | LED | PA6 |
-| Watchdog | IWDG matériel, timeout ≈ 10 s | Nourri uniquement par `Task_Supervisor` |
+| Temperature/humidity sensor | AHT20 | I2C1: PB6 (SCL) / PB7 (SDA) |
+| Storage | microSD module | SPI2: PB13 (SCK) / PB14 (MISO) / PB15 (MOSI), CS on PA4 |
+| Debug and measurement display | HC-05 Bluetooth module | USART1: PA9 / PA10, TX via DMA1 Channel 4 |
+| System status LED | LED | PA5 |
+| Supervisor heartbeat LED | LED | PA6 |
+| Watchdog | Hardware IWDG, timeout ≈ 10 s | Fed only by `Task_Supervisor` |
 
-## Fonctionnement
-
-- Une mesure par seconde (AHT20, avec vérification CRC).
-- Chaque mesure est affichée sur l'UART.
-- Seules les mesures valides sont stockées sur la microSD, par blocs de 512 octets.
-- Au redémarrage, l'écriture reprend au bloc suivant (position persistée sur la carte).
-- Si une panne dure trop longtemps, le système cesse de nourrir le watchdog et redémarre proprement.
-
-
-## Architecture Diagramme de blocs matériel
+## Hardware Architecture
 
 ```mermaid
 graph LR
-    subgraph ALIM["Alimentation"]
-        P5["USB / 5V"] --> LDO["LDO 3.3V"]
+    subgraph POWER["Power supply"]
+        P5["USB / 5V"] --> LDO["3.3V LDO"]
     end
 
     subgraph MCU["STM32F103RB — Cortex-M3 @ 64 MHz (HSI×16) + FreeRTOS"]
@@ -41,10 +51,10 @@ graph LR
         GPIO["GPIO"]
     end
 
-    AHT["Capteur AHT20<br/>Température + Humidité<br/>I2C, alim 3.3V"]
-    SD["microSD<br/>Stockage des mesures<br/>SPI mode 0, alim 3.3V"]
-    BT["Module BLE HC-05<br/>Debug + affichage mesures"]
-    LEDS["LED PA5 = état système<br/>LED PA6 = heartbeat supervisor"]
+    AHT["AHT20 sensor<br/>Temperature + Humidity<br/>I2C, 3.3V supply"]
+    SD["microSD<br/>Measurement storage<br/>SPI mode 0, 3.3V supply"]
+    BT["HC-05 Bluetooth module<br/>Debug + measurement display"]
+    LEDS["LED PA5 = system status<br/>LED PA6 = supervisor heartbeat"]
 
     LDO --> MCU
     LDO --> AHT
@@ -55,16 +65,29 @@ graph LR
     SD -->|"MOSI/MISO/SCK/CS"| SPI2
     BT -->|"TX/RX"| USART1
     LEDS --> GPIO
-    IWDG -->|"Reset système"| MCU
+    IWDG -->|"System reset"| MCU
 ```
-## Architecture logicielle
+
+## Software Architecture
+
+The software follows a layered architecture:
+
+```text
+FreeRTOS tasks
+      ↓
+Drivers: AHT20, SD, UART
+      ↓
+STM32 HAL
+```
+
+A task never communicates directly with the STM32 HAL.
 
 ```mermaid
 graph TD
-    subgraph Tâches FreeRTOS
-        MAIN["Task_Main<br/>acquisition AHT20, 1 s"]
-        STO["Task_Storage<br/>buffer 512 o, écriture SD"]
-        SUP["Task_Supervisor<br/>machine à états, watchdog"]
+    subgraph FreeRTOS_Tasks["FreeRTOS tasks"]
+        MAIN["Task_Main<br/>AHT20 acquisition, 1 s"]
+        STO["Task_Storage<br/>512-byte buffer, SD writing"]
+        SUP["Task_Supervisor<br/>state machine, watchdog"]
     end
 
     MAIN -->|queue_sample| STO
@@ -72,66 +95,72 @@ graph TD
     STO -->|health_queue| SUP
     SUP -->|HAL_IWDG_Refresh| WDG[IWDG]
 
-    MAIN --> AHT[driver AHT20] --> I2C[hal_i2c]
-    STO --> SD[driver SD] --> SPI[SPI2]
-    MAIN --> UART[driver UART DMA]
+    MAIN --> AHT[AHT20 driver] --> I2C[hal_i2c]
+    STO --> SD[SD driver] --> SPI[SPI2]
+    MAIN --> UART[UART DMA driver]
 ```
 
-Architecture en couches : tâches, drivers (AHT20, SD, UART), puis HAL STM32. Une tâche ne parle jamais directement à la HAL.
+### Tasks
 
-### Tâches
-
-| Tâche | Rôle | Période |
+| Task | Role | Period |
 |---|---|---|
-| `Task_Main` | Lit l'AHT20, affiche, envoie l'échantillon à `Task_Storage`, compte ses erreurs consécutives | 1 s |
-| `Task_Storage` | Accumule les échantillons valides en RAM, écrit un bloc SD quand il est plein, persiste le pointeur d'écriture | Sur événement |
-| `Task_Supervisor` | Reçoit les rapports de santé, gère la machine à états et décide du kick du watchdog | ≤ 1 s |
+| `Task_Main` | Reads the AHT20, displays the result, sends the sample to `Task_Storage`, and counts consecutive errors | 1 s |
+| `Task_Storage` | Accumulates valid samples in RAM, writes an SD block when full, and persists the write pointer | Event-driven |
+| `Task_Supervisor` | Receives health reports, manages the state machine, and decides whether to kick the watchdog | ≤ 1 s |
 
-Principes retenus :
+### Design principles
 
-- **Découplage par queue** : `Task_Main` envoie sans jamais attendre (timeout 0), une SD lente ne perturbe donc pas l'acquisition.
-- **Les erreurs UART ne remontent pas au Supervisor** : elles n'affectent pas la mission de mesure et de stockage.
-- **Une seule queue de santé** (`health_queue`) avec un champ source (capteur ou stockage) et un code d'erreur brut.
+- **Decoupling through queues**: `Task_Main` sends data without blocking (`timeout = 0`), so a slow SD card does not affect acquisition.
+- **UART errors are not reported to the Supervisor**: they do not impact the measurement and storage mission.
+- **Single health queue**: `health_queue` contains a source field (`sensor` or `storage`) and a raw error code.
 
-### Supervision
+## Supervision
 
 ```mermaid
 stateDiagram-v2
     [*] --> INIT
     INIT --> RUNNING
-    RUNNING --> SENSOR_DEGRADED: 3 erreurs capteur consécutives
-    RUNNING --> STORAGE_DEGRADED: échec d'écriture SD
+    RUNNING --> SENSOR_DEGRADED: 3 consecutive sensor errors
+    RUNNING --> STORAGE_DEGRADED: SD write failure
     SENSOR_DEGRADED --> BOTH_DEGRADED
     STORAGE_DEGRADED --> BOTH_DEGRADED
-    SENSOR_DEGRADED --> RUNNING: 3 mesures OK consécutives
-    STORAGE_DEGRADED --> RUNNING: écriture OK
-    SENSOR_DEGRADED --> FATAL: dégradation > 30 s
-    STORAGE_DEGRADED --> FATAL: dégradation > 30 s
-    FATAL --> [*]: plus de kick, reset watchdog
+    SENSOR_DEGRADED --> RUNNING: 3 consecutive successful measurements
+    STORAGE_DEGRADED --> RUNNING: successful write
+    SENSOR_DEGRADED --> FATAL: degraded for more than 30 s
+    STORAGE_DEGRADED --> FATAL: degraded for more than 30 s
+    FATAL --> [*]: no more kicks, watchdog reset
 ```
 
-- Deux chronomètres indépendants (capteur et stockage) de 30 s avant `FATAL`.
-- Le Supervisor attend sur la queue avec un timeout calculé, plafonné à 1 s pour que la boucle (et donc le kick) tourne toujours.
-- Retour à `RUNNING` seulement après plusieurs succès consécutifs, jamais au premier.
+- Two independent timers are used: one for the sensor and one for storage.
+- Each timer allows 30 seconds before entering the `FATAL` state.
+- The Supervisor waits on the health queue with a timeout capped at 1 second, ensuring that the watchdog is always serviced.
+- The system returns to `RUNNING` only after several consecutive successful operations.
 
-### Watchdog (IWDG)
+## Watchdog
 
-- Timeout ≈ 10 s (le LSI varie de 30 à 60 kHz selon les puces, la durée réelle est donc approximative).
-- Démarré par le Supervisor après la première boucle de chaque tâche, pour ne pas reseter pendant l'initialisation de la SD.
-- Un seul point de kick, et uniquement si l'état n'est pas `FATAL` et que les compteurs de vie (heartbeat) de `Task_Main` et `Task_Storage` progressent.
-- En `FATAL`, le système cesse volontairement de nourrir le watchdog et redémarre (fail-safe par reset).
-- Au démarrage, la cause du reset est lue (`RCC_FLAG_IWDGRST`) et loguée.
+The Independent Watchdog (IWDG) is used as a final fail-safe mechanism.
 
-## Stockage sur microSD
+- Timeout: approximately 10 seconds.
+- The actual duration is approximate because the LSI clock varies between 30 and 60 kHz depending on the chip.
+- The watchdog is started by the Supervisor after the first loop of each task, avoiding a reset during SD initialization.
+- It is kicked from a single location.
+- The watchdog is refreshed only if:
+  - The system is not in the `FATAL` state.
+  - The heartbeat counters of `Task_Main` and `Task_Storage` are progressing.
+- In `FATAL`, the system deliberately stops feeding the watchdog and restarts.
+- At startup, the reset cause is read using `RCC_FLAG_IWDGRST` and logged.
 
-Accès en blocs bruts de 512 octets, sans système de fichiers : les données ne sont relues que par le firmware lui-même.
+## microSD Storage
 
-| Bloc | Contenu |
+Data is stored using raw 512-byte blocks, without a file system.  
+The data can only be read back by the firmware itself.
+
+| Block | Content |
 |---|---|
-| 999 | Métadonnées : magic number, prochain bloc à écrire, compteur d'écritures |
-| 1000 à 50999 | Zone de logs en buffer circulaire |
+| 999 | Metadata: magic number, next block to write, write counter |
+| 1000 to 50999 | Log area used as a circular buffer |
 
-Format d'un échantillon (8 octets) :
+### Sample format
 
 ```c
 typedef struct {
@@ -139,83 +168,161 @@ typedef struct {
     uint8_t temp_frac;
     uint8_t hum_int;
     uint8_t hum_frac;
-    SensorStatus st;   // 4 octets (enum)
+    SensorStatus st;   /* 4 bytes (enum) */
 } syste;
 ```
 
-Capacité : 64 échantillons par bloc, soit un bloc écrit toutes les 64 s à 1 Hz. La zone réservée de 50 000 blocs contient environ 3,2 millions d'échantillons, soit **environ 37 jours** à 1 mesure par seconde avant bouclage. Convertir `SensorStatus` en `uint8_t` ferait passer l'échantillon à 5 octets (102 par bloc).
+- Each sample is 8 bytes.
+- Each 512-byte block contains 64 samples.
+- At 1 Hz, one block is written every 64 seconds.
+- The reserved area contains 50,000 blocks.
+- Total capacity: approximately 3.2 million samples.
+- At one measurement per second, this represents about **37 days** of logging before wrapping around.
 
-Le pointeur d'écriture est relu au démarrage et validé par le magic number (reprise après reset), puis mis à jour après chaque bloc écrit.
+Using `uint8_t` instead of a 4-byte enum for `SensorStatus` would reduce the sample size to 5 bytes, allowing 102 samples per block.
 
-### Driver SD (mode SPI)
+The write pointer is read back at startup and validated using the magic number.  
+It is then updated after each successfully written block.
 
-- Initialisation : 74 coups d'horloge CS haut, CMD0, CMD8, CMD55/ACMD41 (boucle jusqu'à 1 s), CMD58 (détection SDSC/SDHC), initialisation à faible vitesse puis passage en vitesse rapide.
-- Lecture (CMD17) et écriture (CMD24) : CS maintenu bas pendant toute la transaction, y compris la phase de données.
-- Écriture : token `0xFE`, 512 octets, CRC factice, vérification du data response token, attente de fin de busy avec timeout.
-- Adressage : numéro de bloc (SDHC) ou octets (SDSC).
+## SD Driver
 
-## Gestion des erreurs
+The SD card is accessed in SPI mode.
 
-| Source | Détection | Réaction |
-|---|---|---|
-| I2C | NACK, TIMEOUT, BUSY, BUS ERROR traduits en codes distincts | Compteur d'erreurs consécutives, rapport au Supervisor |
-| Capteur | CRC invalide, mesure pas prête | Échantillon ignoré, non stocké |
-| SD | Échec de commande, data response, timeout busy | Rapport au Supervisor |
-| UART | `HAL_BUSY`, timeout | Local, sans impact sur l'état système |
-| Tâche bloquée | Heartbeat figé | Plus de kick, reset watchdog |
+### Initialization sequence
 
-
-## Tests et CI
-
-| Niveau | Outils | Périmètre |
-|---|---|---|
-| Tests unitaires | Unity + Ceedling, exécutés sur l'hôte avec GCC | Logique indépendante du matériel |
-| Tests d'intégration | Sur cible, par injection de pannes | Comportement du système complet en situation de panne |
-| CI | GitHub Actions | Compilation du firmware, tests unitaires à chaque push |
-
-## Tests
-
-Tests réalisés par injection de pannes :
-
-| # | Scénario | Résultat attendu | Résultat |
-|---|---|---|---|
-| 1 | Capteur débranché 5 s puis rebranché | `SENSOR_DEGRADED` puis retour `RUNNING`, sans reset |3 fois Sensor_OK |
-| 2 | Capteur débranché plus de 30 s | `FATAL`, reset watchdog, reprise au bon bloc | Status_fatal |
-| 3 | Carte SD retirée | `STORAGE_DEGRADED`, puis `FATAL` au-delà de 30 s | idem |
-| 4 | Boucle infinie dans `Task_Main` | Reset par watchdog |Validé |
-| 5 | Écriture puis relecture d'un bloc SD | Contenu identique | validé |
-| 6 | Coupure d'alimentation et redémarrage | Reprise au bloc suivant | validé |
-
-## Lancer les tests unitaires en local :
-
+```text
+74 clock cycles with CS high
+→ CMD0
+→ CMD8
+→ CMD55 / ACMD41
+→ CMD58
+→ Low-speed initialization
+→ Switch to high-speed SPI
 ```
+
+### Read and write
+
+- `CMD17` is used for single-block reads.
+- `CMD24` is used for single-block writes.
+- CS remains low during the entire transaction, including the data phase.
+- The write sequence uses:
+  - `0xFE` start token
+  - 512 data bytes
+  - Dummy CRC
+  - Data response token verification
+  - Busy wait with timeout
+- Addressing depends on the card type:
+  - SDHC: block number
+  - SDSC: byte address
+
+## Error Handling
+
+| Source | Detection | Reaction |
+|---|---|---|
+| I2C | NACK, TIMEOUT, BUSY, BUS ERROR translated into distinct codes | Consecutive error counter, report to the Supervisor |
+| Sensor | Invalid CRC, measurement not ready | Sample ignored, not stored |
+| SD | Command failure, data response failure, busy timeout | Report to the Supervisor |
+| UART | `HAL_BUSY`, timeout | Local handling, no impact on system status |
+| Blocked task | Frozen heartbeat | No more watchdog kicks, watchdog reset |
+
+## Testing
+
+### Test strategy
+
+| Level | Tools | Scope |
+|---|---|---|
+| Unit tests | Unity + Ceedling, run on host with GCC | Hardware-independent logic |
+| Integration tests | On target, using fault injection | Full-system behavior under failure conditions |
+| CI | GitHub Actions | Firmware build and unit tests on every push |
+
+### Fault-injection tests
+
+| # | Scenario | Expected result | Result |
+|---|---|---|---|
+| 1 | Sensor disconnected for 5 s then reconnected | `SENSOR_DEGRADED`, then return to `RUNNING`, without reset | 3 × Sensor_OK |
+| 2 | Sensor disconnected for more than 30 s | `FATAL`, watchdog reset, resumption at the correct block | Status_fatal |
+| 3 | SD card removed | `STORAGE_DEGRADED`, then `FATAL` after 30 s | Same as above |
+| 4 | Infinite loop in `Task_Main` | Watchdog reset | Validated |
+| 5 | Write then read back of an SD block | Identical content | Validated |
+| 6 | Power cut and restart | Resumption at the next block | Validated |
+
+## Run Unit Tests Locally
+
+```bash
 ceedling test:all
 ```
 
-Les commandes exactes de compilation du firmware sont dans `.github/workflows`.
+The exact firmware build commands are defined in:
 
-## Outils
+```text
+.github/workflows/
+```
 
-GCC (`arm-none-eabi-gcc` pour la cible, GCC hôte pour les tests unitaires), Unity, Ceedling, GitHub Actions, FreeRTOS, HAL STM32.
+## Tools
 
-## Problèmes rencontrés et leçons
+- GCC
+  - `arm-none-eabi-gcc` for the target
+  - Host GCC for unit tests
+- Unity
+- Ceedling
+- GitHub Actions
+- FreeRTOS
+- STM32 HAL
 
-- **MISO configurée en `GPIO_MODE_AF_PP` sur STM32F1** : la ligne était pilotée en sortie, la lecture SD ne renvoyait que des `0xFF`. Correction : MISO en entrée avec pull-up.
-- **CS relevé entre CMD17/CMD24 et la phase de données** : la carte abandonne la transaction. Correction : CS géré par l'appelant pendant toute la durée de la transaction.
-- **Octet parasite envoyé avant le token d'écriture** (variable non initialisée) : R1 illisible et décalage du flux.
-- **Écriture DMA UART** : `USART1_IRQHandler` est indispensable en plus du handler du canal DMA, sinon le callback de fin d'émission n'est jamais appelé et la HAL reste en `BUSY`.
-- **Création de tâche en échec** : heap FreeRTOS (`configTOTAL_HEAP_SIZE`) trop petit.
-- **Tâche suspendue par erreur** : un `vTaskSuspend` après un échec d'initialisation masquait le diagnostic.
+## Issues Encountered and Lessons Learned
 
-## À faire
+### MISO configured as `GPIO_MODE_AF_PP`
 
-- Ré-initialisation automatique de la SD et bus recovery SPI.
-- Ré-initialisation automatique de la capteur et bus recovery I2C.
-- Relecture de l'historique et commandes via la liaison Bluetooth.
+On STM32F1, configuring MISO as `GPIO_MODE_AF_PP` caused the line to be driven as an output.  
+As a result, SD reads only returned `0xFF`.
 
-## 📸 Aperçu du projet
-![Diagramme de blocs matériel](image/2.jpeg)
+**Fix:** configure MISO as an input with pull-up.
 
-## Compilation et flash
+### CS raised between command and data phase
 
-À compléter : outil de build (CubeIDE, CMake...), version du firmware package STM32F1, procédure de flash.
+Raising CS between `CMD17` / `CMD24` and the data phase caused the SD card to abort the transaction.
+
+**Fix:** let the caller manage CS for the entire transaction.
+
+### Spurious byte before write token
+
+An uninitialized variable caused a spurious byte to be sent before the write token.  
+This made the R1 response unreadable and shifted the data stream.
+
+### UART DMA transmission
+
+`USART1_IRQHandler` is required in addition to the DMA channel handler.  
+Without it, the transmission-complete callback is never called and the HAL remains in `BUSY`.
+
+### FreeRTOS task creation failure
+
+Task creation failed because the FreeRTOS heap was too small.
+
+**Fix:** increase `configTOTAL_HEAP_SIZE`.
+
+### Task suspended after initialization failure
+
+Using `vTaskSuspend()` after an initialization failure hid the diagnostic and made debugging harder.
+
+## Roadmap
+
+- Automatic SD re-initialization and SPI bus recovery
+- Automatic sensor re-initialization and I2C bus recovery
+- History readback through the Bluetooth link
+- Remote commands through Bluetooth
+
+## Project Preview
+
+![Hardware block diagram](image/2.jpeg)
+
+## Build and Flash
+
+To be completed:
+
+- Build tool: CubeIDE, CMake, etc.
+- STM32F1 firmware package version
+- Flashing procedure
+
+## License
+
+To be defined.
