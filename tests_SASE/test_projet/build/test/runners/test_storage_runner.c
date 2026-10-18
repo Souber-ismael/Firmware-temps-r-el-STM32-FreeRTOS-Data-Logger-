@@ -2,12 +2,14 @@
 
 /*=======Automagically Detected Files To Include=====*/
 #include "unity.h"
+#include "cmock.h"
 /* injected defines for unity settings, etc */
 #ifndef UNITY_EXCLUDE_FLOAT
 #define UNITY_EXCLUDE_FLOAT
 #endif /* UNITY_EXCLUDE_FLOAT */
 #include <string.h>
 #include "storage.h"
+#include "mock_SD_DRIVER.h"
 
 int GlobalExpectCount;
 int GlobalVerifyOrder;
@@ -24,12 +26,12 @@ struct UnityRunTestParameters
 /*=======External Functions This Runner Calls=====*/
 extern void setUp(void);
 extern void tearDown(void);
-extern void test_init_valid_magic_restores_block(void);
-extern void test_init_bad_magic_resets_and_saves(void);
-extern void test_init_read_error_resets(void);
-extern void test_write_sample_advances_and_saves_meta(void);
 extern void test_write_sample_error_does_not_advance(void);
+extern void test_write_sample_success_advances_and_saves_meta(void);
 extern void test_write_sample_wraps_at_end_of_log(void);
+extern void test_init_read_error_resets(void);
+extern void test_init_bad_magic_resets_and_saves(void);
+extern void test_init_valid_magic_restores_block(void);
 
 
 /*=======Mock Management=====*/
@@ -38,12 +40,15 @@ static void CMock_Init(void)
   GlobalExpectCount = 0;
   GlobalVerifyOrder = 0;
   GlobalOrderError = NULL;
+  mock_SD_DRIVER_Init();
 }
 static void CMock_Verify(void)
 {
+  mock_SD_DRIVER_Verify();
 }
 static void CMock_Destroy(void)
 {
+  mock_SD_DRIVER_Destroy();
 }
 
 /*=======Test Reset Options=====*/
@@ -102,17 +107,17 @@ static void run_test(UnityTestFunction func, const char* name, UNITY_LINE_TYPE l
     {
       UnityPrint("test_storage.c");
       UNITY_PRINT_EOL();
-      UnityPrint("  test_init_valid_magic_restores_block");
+      UnityPrint("  test_write_sample_error_does_not_advance");
       UNITY_PRINT_EOL();
-      UnityPrint("  test_init_bad_magic_resets_and_saves");
+      UnityPrint("  test_write_sample_success_advances_and_saves_meta");
+      UNITY_PRINT_EOL();
+      UnityPrint("  test_write_sample_wraps_at_end_of_log");
       UNITY_PRINT_EOL();
       UnityPrint("  test_init_read_error_resets");
       UNITY_PRINT_EOL();
-      UnityPrint("  test_write_sample_advances_and_saves_meta");
+      UnityPrint("  test_init_bad_magic_resets_and_saves");
       UNITY_PRINT_EOL();
-      UnityPrint("  test_write_sample_error_does_not_advance");
-      UNITY_PRINT_EOL();
-      UnityPrint("  test_write_sample_wraps_at_end_of_log");
+      UnityPrint("  test_init_valid_magic_restores_block");
       UNITY_PRINT_EOL();
       return 0;
     }
@@ -123,29 +128,30 @@ static void run_test(UnityTestFunction func, const char* name, UNITY_LINE_TYPE l
 
   struct UnityRunTestParameters run_test_params_arr[6];
 
-  run_test_params_arr[0].func = test_init_valid_magic_restores_block;
-  run_test_params_arr[0].name = "test_init_valid_magic_restores_block";
-  run_test_params_arr[0].line_num = 50;
-  run_test_params_arr[1].func = test_init_bad_magic_resets_and_saves;
-  run_test_params_arr[1].name = "test_init_bad_magic_resets_and_saves";
-  run_test_params_arr[1].line_num = 62;
-  run_test_params_arr[2].func = test_init_read_error_resets;
-  run_test_params_arr[2].name = "test_init_read_error_resets";
-  run_test_params_arr[2].line_num = 76;
-  run_test_params_arr[3].func = test_write_sample_advances_and_saves_meta;
-  run_test_params_arr[3].name = "test_write_sample_advances_and_saves_meta";
-  run_test_params_arr[3].line_num = 87;
-  run_test_params_arr[4].func = test_write_sample_error_does_not_advance;
-  run_test_params_arr[4].name = "test_write_sample_error_does_not_advance";
-  run_test_params_arr[4].line_num = 102;
-  run_test_params_arr[5].func = test_write_sample_wraps_at_end_of_log;
-  run_test_params_arr[5].name = "test_write_sample_wraps_at_end_of_log";
-  run_test_params_arr[5].line_num = 115;
+  run_test_params_arr[0].func = test_write_sample_error_does_not_advance;
+  run_test_params_arr[0].name = "test_write_sample_error_does_not_advance";
+  run_test_params_arr[0].line_num = 15;
+  run_test_params_arr[1].func = test_write_sample_success_advances_and_saves_meta;
+  run_test_params_arr[1].name = "test_write_sample_success_advances_and_saves_meta";
+  run_test_params_arr[1].line_num = 28;
+  run_test_params_arr[2].func = test_write_sample_wraps_at_end_of_log;
+  run_test_params_arr[2].name = "test_write_sample_wraps_at_end_of_log";
+  run_test_params_arr[2].line_num = 43;
+  run_test_params_arr[3].func = test_init_read_error_resets;
+  run_test_params_arr[3].name = "test_init_read_error_resets";
+  run_test_params_arr[3].line_num = 58;
+  run_test_params_arr[4].func = test_init_bad_magic_resets_and_saves;
+  run_test_params_arr[4].name = "test_init_bad_magic_resets_and_saves";
+  run_test_params_arr[4].line_num = 72;
+  run_test_params_arr[5].func = test_init_valid_magic_restores_block;
+  run_test_params_arr[5].name = "test_init_valid_magic_restores_block";
+  run_test_params_arr[5].line_num = 90;
 
   for (int i = 0; i < 6; i++)
   {
     run_test(run_test_params_arr[i].func, run_test_params_arr[i].name, run_test_params_arr[i].line_num);
   }
 
+  CMock_Guts_MemFreeFinal();
   return UNITY_END();
 }

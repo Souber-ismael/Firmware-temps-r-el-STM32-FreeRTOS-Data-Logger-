@@ -1,4 +1,4 @@
-﻿/**
+/**
  * @file    SD_DRIVER.h
  * @brief   Interface publique du driver microSD en mode SPI.
  *

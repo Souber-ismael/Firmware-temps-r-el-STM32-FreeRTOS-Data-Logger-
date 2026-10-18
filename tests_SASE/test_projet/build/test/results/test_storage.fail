@@ -1,0 +1,40 @@
+---
+:source:
+  :file: "../../Tests/storage/test_storage.c"
+  :dirname: "../../Tests/storage"
+  :basename: test_storage.c
+:successes:
+- :test: test_write_sample_error_does_not_advance
+  :line: 15
+  :message: ''
+  :unity_test_time: 0
+- :test: test_write_sample_success_advances_and_saves_meta
+  :line: 28
+  :message: ''
+  :unity_test_time: 0
+- :test: test_write_sample_wraps_at_end_of_log
+  :line: 43
+  :message: ''
+  :unity_test_time: 0
+- :test: test_init_read_error_resets
+  :line: 58
+  :message: ''
+  :unity_test_time: 0
+- :test: test_init_valid_magic_restores_block
+  :line: 90
+  :message: ''
+  :unity_test_time: 0
+:failures:
+- :test: test_init_bad_magic_resets_and_saves
+  :line: 78
+  :message: Expected 0x000003D4 Was 0x000003E7:Function SD_READBLOC Argument addr:Function
+    called with unexpected argument value.
+  :unity_test_time: 0
+:ignores: []
+:counts:
+  :total: 6
+  :passed: 5
+  :failed: 1
+  :ignored: 0
+:stdout: []
+:time: 0.07653029999346472
