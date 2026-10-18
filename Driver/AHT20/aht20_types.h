@@ -28,7 +28,7 @@ typedef enum {
 #define AHT20_ADDR      0x38  /**< Adresse I2C du capteur AHT20 (fixe, non modifiable) */
 #define SENSOR_TEMP_MAX  85   /**< Temperature maximale valide en degres Celsius        */
 #define SENSOR_TEMP_MIN (-40) /**< Temperature minimale valide en degres Celsius        */
-#define SENSOR_HUM_MAX  100   /**< Humidite maximale valide en pourcentage              */
+#define SENSOR_HUM_MAX   98   /**< Humidite maximale valide en pourcentage              */
 #define SENSOR_HUM_MIN    0   /**< Humidite minimale valide en pourcentage              */
 /** @} */
 

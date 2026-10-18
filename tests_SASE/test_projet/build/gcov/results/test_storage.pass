@@ -20,21 +20,20 @@
   :line: 58
   :message: ''
   :unity_test_time: 0
+- :test: test_init_bad_magic_resets_and_saves
+  :line: 72
+  :message: ''
+  :unity_test_time: 0
 - :test: test_init_valid_magic_restores_block
   :line: 90
   :message: ''
   :unity_test_time: 0
-:failures:
-- :test: test_init_bad_magic_resets_and_saves
-  :line: 78
-  :message: Expected 0x000003D4 Was 0x000003E7:Function SD_READBLOC Argument addr:Function
-    called with unexpected argument value.
-  :unity_test_time: 0
+:failures: []
 :ignores: []
 :counts:
   :total: 6
-  :passed: 5
-  :failed: 1
+  :passed: 6
+  :failed: 0
   :ignored: 0
 :stdout: []
-:time: 0.07653029999346472
+:time: 0.08287350001046434

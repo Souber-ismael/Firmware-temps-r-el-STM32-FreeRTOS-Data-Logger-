@@ -27,6 +27,13 @@ extern void test_conversion_25_degres_50_pourcent(void);
 extern void test_conversion_minimal(void);
 extern void test_conversion_maximal(void);
 extern void test_conversion_horsplage(void);
+extern void test_temperature_negative(void);
+extern void test_temp_NULL(void);
+extern void test_temperature_min_hum_max(void);
+extern void test_hum_max(void);
+extern void test_tempfrac_NULL(void);
+extern void test_humint_NULL(void);
+extern void test_humfrac_NULL(void);
 
 
 /*=======Mock Management=====*/
@@ -107,6 +114,20 @@ static void run_test(UnityTestFunction func, const char* name, UNITY_LINE_TYPE l
       UNITY_PRINT_EOL();
       UnityPrint("  test_conversion_horsplage");
       UNITY_PRINT_EOL();
+      UnityPrint("  test_temperature_negative");
+      UNITY_PRINT_EOL();
+      UnityPrint("  test_temp_NULL");
+      UNITY_PRINT_EOL();
+      UnityPrint("  test_temperature_min_hum_max");
+      UNITY_PRINT_EOL();
+      UnityPrint("  test_hum_max");
+      UNITY_PRINT_EOL();
+      UnityPrint("  test_tempfrac_NULL");
+      UNITY_PRINT_EOL();
+      UnityPrint("  test_humint_NULL");
+      UNITY_PRINT_EOL();
+      UnityPrint("  test_humfrac_NULL");
+      UNITY_PRINT_EOL();
       return 0;
     }
     return parse_status;
@@ -114,7 +135,7 @@ static void run_test(UnityTestFunction func, const char* name, UNITY_LINE_TYPE l
 #endif
   UnityBegin("test_aht20_convert.c");
 
-  struct UnityRunTestParameters run_test_params_arr[4];
+  struct UnityRunTestParameters run_test_params_arr[11];
 
   run_test_params_arr[0].func = test_conversion_25_degres_50_pourcent;
   run_test_params_arr[0].name = "test_conversion_25_degres_50_pourcent";
@@ -127,9 +148,30 @@ static void run_test(UnityTestFunction func, const char* name, UNITY_LINE_TYPE l
   run_test_params_arr[2].line_num = 66;
   run_test_params_arr[3].func = test_conversion_horsplage;
   run_test_params_arr[3].name = "test_conversion_horsplage";
-  run_test_params_arr[3].line_num = 92;
+  run_test_params_arr[3].line_num = 91;
+  run_test_params_arr[4].func = test_temperature_negative;
+  run_test_params_arr[4].name = "test_temperature_negative";
+  run_test_params_arr[4].line_num = 117;
+  run_test_params_arr[5].func = test_temp_NULL;
+  run_test_params_arr[5].name = "test_temp_NULL";
+  run_test_params_arr[5].line_num = 143;
+  run_test_params_arr[6].func = test_temperature_min_hum_max;
+  run_test_params_arr[6].name = "test_temperature_min_hum_max";
+  run_test_params_arr[6].line_num = 162;
+  run_test_params_arr[7].func = test_hum_max;
+  run_test_params_arr[7].name = "test_hum_max";
+  run_test_params_arr[7].line_num = 184;
+  run_test_params_arr[8].func = test_tempfrac_NULL;
+  run_test_params_arr[8].name = "test_tempfrac_NULL";
+  run_test_params_arr[8].line_num = 206;
+  run_test_params_arr[9].func = test_humint_NULL;
+  run_test_params_arr[9].name = "test_humint_NULL";
+  run_test_params_arr[9].line_num = 225;
+  run_test_params_arr[10].func = test_humfrac_NULL;
+  run_test_params_arr[10].name = "test_humfrac_NULL";
+  run_test_params_arr[10].line_num = 245;
 
-  for (int i = 0; i < 4; i++)
+  for (int i = 0; i < 11; i++)
   {
     run_test(run_test_params_arr[i].func, run_test_params_arr[i].name, run_test_params_arr[i].line_num);
   }

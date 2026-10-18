@@ -46,6 +46,12 @@ typedef struct {
     uint8_t  padding[500];  /**< Rembourrage pour atteindre exactement 512 octets   */
 } SD_Metadata_t;
 
+
+
+#ifdef TEST
+  extern uint32_t current_block;
+#endif
+
 /**
  * @brief  Initialise la couche de stockage.
  *

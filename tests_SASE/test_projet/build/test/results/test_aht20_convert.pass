@@ -17,15 +17,43 @@
   :message: ''
   :unity_test_time: 0
 - :test: test_conversion_horsplage
-  :line: 92
+  :line: 91
+  :message: ''
+  :unity_test_time: 0
+- :test: test_temperature_negative
+  :line: 117
+  :message: ''
+  :unity_test_time: 0
+- :test: test_temp_NULL
+  :line: 143
+  :message: ''
+  :unity_test_time: 0
+- :test: test_temperature_min_hum_max
+  :line: 162
+  :message: ''
+  :unity_test_time: 0
+- :test: test_hum_max
+  :line: 184
+  :message: ''
+  :unity_test_time: 0
+- :test: test_tempfrac_NULL
+  :line: 206
+  :message: ''
+  :unity_test_time: 0
+- :test: test_humint_NULL
+  :line: 225
+  :message: ''
+  :unity_test_time: 0
+- :test: test_humfrac_NULL
+  :line: 245
   :message: ''
   :unity_test_time: 0
 :failures: []
 :ignores: []
 :counts:
-  :total: 4
-  :passed: 4
+  :total: 11
+  :passed: 11
   :failed: 0
   :ignored: 0
 :stdout: []
-:time: 0.1874948000186123
+:time: 0.16919690000941046

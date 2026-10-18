@@ -56,7 +56,7 @@
   :enabled:
     #- beep                           # beeps when finished, so you don't waste time waiting for ceedling
     - module_generator                # handy for quickly creating source, header, and test templates
-    #- gcov                           # test coverage using gcov. Requires gcc, gcov, and a coverage analyzer like gcovr
+    - gcov                           # test coverage using gcov. Requires gcc, gcov, and a coverage analyzer like gcovr
     #- cppcheck                       # static analysis using cppcheck. Requires cppcheck to be installed
     #- valgrind                       # memory analysis using valgrind. Requires valgrind to be installed (Linux only)
     #- bullseye                       # test coverage using bullseye. Requires bullseye for your platform
@@ -246,15 +246,15 @@
 # For more information on these options, see docs in plugins/gcov
 :gcov:
   :summaries: TRUE                # Enable simple coverage summaries to console after tests
-  :report_task: FALSE             # Disabled dedicated report generation task (this enables automatic report generation)
+  :report_task: TRUE             # Disabled dedicated report generation task (this enables automatic report generation)
   :utilities:
     - gcovr           # Use gcovr to create the specified reports (default).
     #- ReportGenerator # Use ReportGenerator to create the specified reports.
   :reports: # Specify one or more reports to generate.
     # Make an HTML summary report.
-    - HtmlBasic
-    # - HtmlDetailed
-    # - Text
+    #- HtmlBasic
+    - HtmlDetailed
+    - Text
     # - Cobertura
     # - SonarQube
     # - JSON

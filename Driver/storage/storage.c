@@ -11,7 +11,11 @@
 #include "storage.h"
 
 /** @brief Numero du prochain bloc de journal a ecrire. Persiste sur SD. */
-static uint32_t current_block;
+#ifdef TEST
+  uint32_t current_block;
+#else
+  static uint32_t current_block;
+#endif
 
 /**
  * @brief  Initialise la couche de stockage et reprend le pointeur de bloc.
