@@ -19,3 +19,8 @@ Tests/build/
 .metadata/
 .settings/
 *.launch
+
+
+# Fichiers générés par Ceedling
+tests_SASE/test_projet/build/
+tests_SASE/test_projet/coverage.html
