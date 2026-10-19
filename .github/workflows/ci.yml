@@ -1,0 +1,11 @@
+name: CI
+
+on: [push, pull_request]
+
+jobs:
+  hello:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: echo "Bonjour depuis la CI"
+      - run: ls tests_SASE/test_projet
