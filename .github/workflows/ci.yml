@@ -32,13 +32,14 @@ jobs:
       - name: Coverage
         run: ceedling gcov:all
 
-      - name: Upload coverage report
+      - name: Diagnostiquer les fichiers de couverture
         if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: coverage-report
-          path: |
-            tests_SASE/test_projet/coverage*.html
-            tests_SASE/test_projet/coverage.css
-            tests_SASE/test_projet/coverage.js
+        working-directory: tests_SASE/test_projet
+        run: |
+          echo "=== Répertoire courant ==="
+          pwd
+          echo "=== Fichiers coverage ==="
+          find . -type f \( -iname '*coverage*' -o -iname '*gcov*' -o -iname '*.info' \)
+          echo "=== Répertoires de build ==="
+          find build -maxdepth 5 -type d 2>/dev/null || true
         
