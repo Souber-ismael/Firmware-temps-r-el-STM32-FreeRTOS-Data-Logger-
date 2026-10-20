@@ -29,4 +29,5 @@ jobs:
       - name: Unit tests
         run: ceedling test:all
 
-      
+      - name: Coverage
+        run: ceedling gcov:all
