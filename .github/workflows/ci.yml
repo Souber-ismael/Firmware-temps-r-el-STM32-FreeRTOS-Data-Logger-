@@ -37,5 +37,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: coverage-report
-          path: tests_SASE/test_projet/coverage*
+          path:  |
+            tests_SASE/test_projet/coverage*
+            tests_SASE/test_projet/build/artifacts/gcov
         
