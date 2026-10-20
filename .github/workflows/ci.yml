@@ -33,12 +33,14 @@ jobs:
         run: ceedling gcov:all
 
 
-      - name: Examiner les résultats gcov
+      - name: Where is the report?
         if: always()
         working-directory: tests_SASE/test_projet
         run: |
-          echo "=== Fichiers produits par gcov ==="
-          find build/gcov -type f -print
-          echo "=== Configuration de couverture ==="
-          grep -n -A 12 -B 3 -E 'gcov|gcovr|coverage' project.yml || true
+          echo "--- build/artifacts ---"
+          ls -R build/artifacts 2>&1 | head -40
+          echo "--- html files ---"
+          find . -name "*.html" -not -path "./build/vendor/*" | head -20
+          echo "--- gcda files ---"
+          find . -name "*.gcda" | head -5
         
