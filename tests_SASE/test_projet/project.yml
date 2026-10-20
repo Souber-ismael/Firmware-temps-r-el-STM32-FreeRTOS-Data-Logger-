@@ -103,7 +103,7 @@
   :source:
     - ../../Driver/AHT20
     - ../../APP/task_supervisor
-    - ../../Driver/Storage
+    - ../../Driver/storage
   :include:
     - ../../Driver/AHT20 # In simple projects, this entry often duplicates :source
     - ../../APP/task_supervisor
