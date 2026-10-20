@@ -107,9 +107,9 @@
   :include:
     - ../../Driver/AHT20 # In simple projects, this entry often duplicates :source
     - ../../APP/task_supervisor
-    - ../../Driver/Storage
-    - ../../Driver/sd
-    - ../../Tests/Storage/fake
+    - ../../Driver/storage
+    - ../../Driver/SD
+    - ../../Tests/storage/fake
   :support: []
   :libraries: []
 
