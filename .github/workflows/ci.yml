@@ -32,17 +32,8 @@ jobs:
       - name: Coverage
         run: ceedling gcov:all
 
-      
-      - name: Diagnose coverage data
-        working-directory: tests_SASE/test_projet
-        run: |
-          echo "=== Source files ==="
-          find ../../Driver -type f -name '*.c' -print
-          echo "=== GCOV data ==="
-          find build/gcov/out -type f \( -name '*.gcda' -o -name '*.gcno' \) -print
-          echo "=== gcovr verbose report ==="
-          gcovr --root . --object-directory build/gcov/out --html-details /tmp/coverage.html --verbose
-
+      - name: Coverage report
+        run: ceedling report:gcov
 
       - name: Upload coverage report
         if: always()
@@ -52,5 +43,13 @@ jobs:
           path: tests_SASE/test_projet/build/artifacts/gcov/gcovr/
           if-no-files-found: error
 
+      - name: Debug gcovr
+        if: always()
+        working-directory: tests_SASE/test_projet
+        run: |
+          gcovr --root ../.. \
+                --object-directory build/gcov/out \
+                --filter '.*/Driver/.*' --filter '.*/APP/.*' \
+                --print-summary
     
         
