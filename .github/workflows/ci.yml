@@ -32,14 +32,13 @@ jobs:
       - name: Coverage
         run: ceedling gcov:all
 
-      - name: Diagnostiquer les fichiers de couverture
+
+      - name: Examiner les résultats gcov
         if: always()
         working-directory: tests_SASE/test_projet
         run: |
-          echo "=== Répertoire courant ==="
-          pwd
-          echo "=== Fichiers coverage ==="
-          find . -type f \( -iname '*coverage*' -o -iname '*gcov*' -o -iname '*.info' \)
-          echo "=== Répertoires de build ==="
-          find build -maxdepth 5 -type d 2>/dev/null || true
+          echo "=== Fichiers produits par gcov ==="
+          find build/gcov -type f -print
+          echo "=== Configuration de couverture ==="
+          grep -n -A 12 -B 3 -E 'gcov|gcovr|coverage' project.yml || true
         
