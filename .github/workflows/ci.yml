@@ -39,4 +39,4 @@ jobs:
           name: coverage-report
           path: |
                 tests_SASE/test_projet/coverage*
-        if-no-files-found: warn
+        
