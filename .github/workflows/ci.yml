@@ -31,3 +31,10 @@ jobs:
 
       - name: Coverage
         run: ceedling gcov:all
+
+      - name: Upload coverage report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage-report
+          path: tests_SASE/test_projet/build/artifacts/gcov
