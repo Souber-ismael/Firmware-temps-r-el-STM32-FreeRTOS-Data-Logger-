@@ -32,15 +32,14 @@ jobs:
       - name: Coverage
         run: ceedling gcov:all
 
+      - name: Coverage report
+        run: ceedling report:gcov
 
-      - name: Where is the report?
+      - name: Upload coverage report
         if: always()
-        working-directory: tests_SASE/test_projet
-        run: |
-          echo "--- build/artifacts ---"
-          ls -R build/artifacts 2>&1 | head -40
-          echo "--- html files ---"
-          find . -name "*.html" -not -path "./build/vendor/*" | head -20
-          echo "--- gcda files ---"
-          find . -name "*.gcda" | head -5
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage-report
+          path: |
+                tests_SASE/test_projet/coverage*
         
