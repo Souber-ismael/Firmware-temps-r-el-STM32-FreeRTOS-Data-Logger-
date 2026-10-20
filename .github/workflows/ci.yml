@@ -32,8 +32,17 @@ jobs:
       - name: Coverage
         run: ceedling gcov:all
 
-      - name: Coverage report
-        run: ceedling report:gcov
+      
+      - name: Diagnose coverage data
+        working-directory: tests_SASE/test_projet
+        run: |
+          echo "=== Source files ==="
+          find ../../Driver -type f -name '*.c' -print
+          echo "=== GCOV data ==="
+          find build/gcov/out -type f \( -name '*.gcda' -o -name '*.gcno' \) -print
+          echo "=== gcovr verbose report ==="
+          gcovr --root . --object-directory build/gcov/out --html-details /tmp/coverage.html --verbose
+
 
       - name: Upload coverage report
         if: always()
