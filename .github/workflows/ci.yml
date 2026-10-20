@@ -3,9 +3,30 @@ name: CI
 on: [push, pull_request]
 
 jobs:
-  hello:
-    runs-on: ubuntu-latest
+  unit-tests:
+    runs-on: ubuntu-24.04
+    defaults:
+      run:
+        working-directory: tests_SASE/test_projet
     steps:
       - uses: actions/checkout@v4
-      - run: echo "Bonjour depuis la CI"
-      - run: ls tests_SASE/test_projet
+
+      - uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: '3.3'
+
+      - name: Install Ceedling and gcovr
+        run: |
+          gem install ceedling -v 1.1.10
+          pip install gcovr==8.6
+
+      - name: Show versions
+        run: |
+          ceedling version
+          gcc --version
+          gcovr --version
+
+      - name: Unit tests
+        run: ceedling test:all
+
+      
