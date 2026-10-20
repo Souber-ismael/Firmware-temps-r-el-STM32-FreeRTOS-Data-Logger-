@@ -37,4 +37,6 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: coverage-report
-          path: tests_SASE/test_projet/build/artifacts/gcov
+          path: |
+                tests_SASE/test_projet/coverage*
+        if-no-files-found: warn
