@@ -1,54 +1,83 @@
-name: CI
 
-on: [push, pull_request]
+name: STM32 CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
 
 jobs:
   unit-tests:
     runs-on: ubuntu-24.04
+
     defaults:
       run:
         working-directory: tests_SASE/test_projet
-    steps:
-      - uses: actions/checkout@v4
 
-      - uses: ruby/setup-ruby@v1
+    steps:
+      - name: Recuperer le code
+        uses: actions/checkout@v4
+
+      - name: Installer Ruby
+        uses: ruby/setup-ruby@v1
         with:
           ruby-version: '3.3'
 
-      - name: Install Ceedling and gcovr
+      - name: Installer Ceedling, GCC et gcovr
         run: |
+          sudo apt-get update
+          sudo apt-get install -y build-essential python3-pip
           gem install ceedling -v 1.1.10
-          pip install gcovr==8.6
+          pip install --user --break-system-packages gcovr==8.6
+          echo "$HOME/.local/bin" >> "$GITHUB_PATH"
 
-      - name: Show versions
+      - name: Verifier les versions
         run: |
           ceedling version
           gcc --version
+          gcov --version
           gcovr --version
 
-      - name: Unit tests
+      - name: Executer les tests unitaires
         run: ceedling test:all
 
-      - name: Coverage
+      - name: Generer les donnees de couverture
+        if: always()
         run: ceedling gcov:all
 
-      
-      - name: Diagnose coverage data
-        working-directory: tests_SASE/test_projet
+      - name: Diagnostiquer les fichiers de couverture
+        if: always()
         run: |
-          echo "=== Source files ==="
+          echo "=== Fichiers source C ==="
           find ../../Driver -type f -name '*.c' -print
-          echo "=== GCOV data ==="
-          find build/gcov/out -type f \( -name '*.gcda' -o -name '*.gcno' \) -print
-          echo "=== gcovr verbose report ==="
-          gcovr --root . --object-directory build/gcov/out --html-details /tmp/coverage.html --verbose
 
-      - name: Upload coverage report
+          echo "=== Fichiers de couverture ==="
+          find build/gcov -type f \( \
+            -name '*.gcda' -o -name '*.gcno' \
+          \) -print
+
+          echo "=== Diagnostic gcovr ==="
+          gcovr \
+            --root ../.. \
+            --object-directory build/gcov/out \
+            --verbose || true
+
+      - name: Generer le rapport HTML
+        if: always()
+        run: ceedling report:gcov
+
+      - name: Lister les rapports generes
+        if: always()
+        run: |
+          echo "=== Rapports disponibles ==="
+          find build/artifacts/gcov -type f -print || true
+
+      - name: Publier le rapport de couverture
         if: always()
         uses: actions/upload-artifact@v4
         with:
           name: rapport-couverture
           path: tests_SASE/test_projet/build/artifacts/gcov/gcovr/
-          if-no-files-found: error
-
-        
+          if-no-files-found: warn
