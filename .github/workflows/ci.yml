@@ -49,23 +49,21 @@ jobs:
 
       
       
-      - name: Diagnostiquer gcovr
-        if: always()
-        working-directory: tests_SASE/test_projet
-        run: |
-          gcovr \
-            --root ../.. \
-            --object-directory build/gcov/out \
-            --filter '.*Driver/.*\.c$' \
-            --gcov-ignore-errors source_not_found \
-            --txt \
-            --verbose
-
-
+      
 
       - name: Generer le rapport HTML
         if: always()
-        run: ceedling report:gcov
+        run: |
+          mkdir -p build/artifacts/gcov/gcovr
+          gcovr --root ../.. \
+                --object-directory build \
+                --filter '.*/(Driver|APP)/.*' \
+                --exclude '.*/aht20\.c' \
+                --exclude '.*/watchdog\.c' \
+                --exclude '.*/app_task_supervisor\.c' \
+                --html-details build/artifacts/gcov/gcovr/coverage.html \
+                --txt build/artifacts/gcov/gcovr/coverage.txt \
+                --print-summary
 
       - name: Lister les rapports generes
         if: always()
