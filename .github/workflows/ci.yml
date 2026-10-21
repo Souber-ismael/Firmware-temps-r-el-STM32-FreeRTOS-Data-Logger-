@@ -47,22 +47,31 @@ jobs:
         if: always()
         run: ceedling gcov:all
 
-      - name: Diagnostiquer les fichiers de couverture
+      
+      - name: Diagnostiquer gcovr
         if: always()
+        working-directory: tests_SASE/test_projet
         run: |
-          echo "=== Fichiers source C ==="
-          find ../../Driver -type f -name '*.c' -print
+          echo "=== Version de gcovr ==="
+          gcovr --version
 
-          echo "=== Fichiers de couverture ==="
-          find build/gcov -type f \( \
-            -name '*.gcda' -o -name '*.gcno' \
-          \) -print
+          echo "=== Sources du projet ==="
+          find ../.. -type f -name '*.c' \
+            -not -path '*/build/*' \
+            -not -path '*/vendor/*'
 
-          echo "=== Diagnostic gcovr ==="
+          echo "=== Fichiers gcda et gcno ==="
+          find build/gcov/out -type f \
+            \( -name '*.gcda' -o -name '*.gcno' \)
+
+          echo "=== Rapport de diagnostic ==="
           gcovr \
             --root ../.. \
             --object-directory build/gcov/out \
-            --verbose || true
+            --filter '.*Driver/.*\.c$' \
+            --txt \
+            --verbose
+
 
       - name: Generer le rapport HTML
         if: always()
