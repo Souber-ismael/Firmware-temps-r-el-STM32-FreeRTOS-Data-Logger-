@@ -48,29 +48,19 @@ jobs:
         run: ceedling gcov:all
 
       
+      
       - name: Diagnostiquer gcovr
         if: always()
         working-directory: tests_SASE/test_projet
         run: |
-          echo "=== Version de gcovr ==="
-          gcovr --version
-
-          echo "=== Sources du projet ==="
-          find ../.. -type f -name '*.c' \
-            -not -path '*/build/*' \
-            -not -path '*/vendor/*'
-
-          echo "=== Fichiers gcda et gcno ==="
-          find build/gcov/out -type f \
-            \( -name '*.gcda' -o -name '*.gcno' \)
-
-          echo "=== Rapport de diagnostic ==="
           gcovr \
             --root ../.. \
             --object-directory build/gcov/out \
             --filter '.*Driver/.*\.c$' \
+            --gcov-ignore-errors source_not_found \
             --txt \
             --verbose
+
 
 
       - name: Generer le rapport HTML
