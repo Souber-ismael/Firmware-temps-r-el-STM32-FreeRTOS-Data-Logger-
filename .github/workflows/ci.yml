@@ -63,6 +63,8 @@ jobs:
                 --exclude '.*/app_task_supervisor\.c' \
                 --html-details build/artifacts/gcov/gcovr/coverage.html \
                 --txt build/artifacts/gcov/gcovr/coverage.txt \
+                --gcov-ignore-errors=no_working_dir_found
+                --merge-mode-functions=separate
                 --print-summary
 
       - name: Lister les rapports generes
