@@ -47,23 +47,26 @@ jobs:
         if: always()
         run: ceedling gcov:all
 
-      
-      
-      
-
+    
       - name: Generer le rapport HTML
         if: always()
         run: |
           mkdir -p build/artifacts/gcov/gcovr
           gcovr --root ../.. \
-                --gcov-object-directory build/gcov/out \
-                --search-path build/gcov/out \
+                --gcov-ignore-errors=no_working_dir_found \
                 --filter '.*/(Driver|APP)/.*' \
                 --exclude '.*/build/.*' \
                 --merge-mode-functions=separate \
                 --html-details build/artifacts/gcov/gcovr/coverage.html \
                 --txt build/artifacts/gcov/gcovr/coverage.txt \
-                --print-summary
+                --print-summary \
+                build/gcov/out
+        
+      - name: Test gcov direct
+        if: always()
+        run: |
+          gcov -b build/gcov/out/test_storage/storage.gcda || true
+          ls *.gcov 2>/dev/null | head
 
       - name: Lister les rapports generes
         if: always()
