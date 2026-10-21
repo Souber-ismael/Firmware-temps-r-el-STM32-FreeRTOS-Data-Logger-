@@ -57,15 +57,10 @@ jobs:
           mkdir -p build/artifacts/gcov/gcovr
           gcovr --root ../.. \
                 --object-directory build \
-                --filter '.*/(Driver|APP)/.*' \
-                --exclude '.*/aht20\.c' \
-                --exclude '.*/watchdog\.c' \
-                --exclude '.*/app_task_supervisor\.c' \
+                --merge-mode-functions=separate \
                 --html-details build/artifacts/gcov/gcovr/coverage.html \
-                --txt build/artifacts/gcov/gcovr/coverage.txt \
-                --gcov-ignore-errors=no_working_dir_found
-                --merge-mode-functions=separate
-                --print-summary
+                --print-summary \
+                --verbose
 
       - name: Lister les rapports generes
         if: always()
