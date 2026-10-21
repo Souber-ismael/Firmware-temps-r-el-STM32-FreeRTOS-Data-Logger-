@@ -48,21 +48,31 @@ jobs:
         run: ceedling gcov:all
 
     
+      
       - name: Generer le rapport HTML
         if: always()
+        working-directory: tests_SASE/test_projet
         run: |
           mkdir -p build/artifacts/gcov/gcovr
+
           gcovr --root ../.. \
                 --gcov-ignore-errors=no_working_dir_found \
                 --filter '.*/(Driver|APP)/.*' \
                 --exclude '.*/build/.*' \
                 --merge-mode-functions=separate \
-                --html-nested build/artifacts/gcov/gcovr/index.html \
-                --html-title "STM32 Data Logger - Couverture" \
-                --html-theme github.dark-green \
-                --txt build/artifacts/gcov/gcovr/coverage.txt \
                 --print-summary \
+                --html-details build/artifacts/gcov/gcovr/coverage.html \
+                --txt build/artifacts/gcov/gcovr/coverage.txt \
                 build/gcov/out
+
+          gcovr --root ../.. \
+                --gcov-ignore-errors=no_working_dir_found \
+                --filter '.*/(Driver|APP)/.*' \
+                --exclude '.*/build/.*' \
+                --merge-mode-functions=separate \
+                --html build/artifacts/gcov/gcovr/index.html \
+                build/gcov/out
+
         
       - name: Test gcov direct
         if: always()
