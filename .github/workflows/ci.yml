@@ -57,7 +57,9 @@ jobs:
                 --filter '.*/(Driver|APP)/.*' \
                 --exclude '.*/build/.*' \
                 --merge-mode-functions=separate \
-                --html-details build/artifacts/gcov/gcovr/coverage.html \
+                --html-nested build/artifacts/gcov/gcovr/index.html \
+                --html-title "STM32 Data Logger - Couverture" \
+                --html-theme github.dark-green \
                 --txt build/artifacts/gcov/gcovr/coverage.txt \
                 --print-summary \
                 build/gcov/out
