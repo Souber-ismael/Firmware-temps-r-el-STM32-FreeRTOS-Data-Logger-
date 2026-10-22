@@ -1,37 +1,24 @@
+name: CI
 
-name: STM32 CI
-
-on:
-  push:
-    branches: [main]
-  pull_request:
-    branches: [main]
-  workflow_dispatch:
+on: [push, pull_request]
 
 jobs:
   unit-tests:
     runs-on: ubuntu-24.04
-
     defaults:
       run:
         working-directory: tests_SASE/test_projet
-
     steps:
-      - name: Recuperer le code
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
 
-      - name: Installer Ruby
-        uses: ruby/setup-ruby@v1
+      - uses: ruby/setup-ruby@v1
         with:
           ruby-version: '3.3'
 
-      - name: Installer Ceedling, GCC et gcovr
+      - name: Installer Ceedling et gcovr
         run: |
-          sudo apt-get update
-          sudo apt-get install -y build-essential python3-pip
           gem install ceedling -v 1.1.10
-          pip install --user --break-system-packages gcovr==8.6
-          echo "$HOME/.local/bin" >> "$GITHUB_PATH"
+          pip install gcovr==8.6
 
       - name: Verifier les versions
         run: |
@@ -47,45 +34,21 @@ jobs:
         if: always()
         run: ceedling gcov:all
 
-    
-      
       - name: Generer le rapport HTML
         if: always()
-        working-directory: tests_SASE/test_projet
         run: |
           mkdir -p build/artifacts/gcov/gcovr
-
           gcovr --root ../.. \
                 --gcov-ignore-errors=no_working_dir_found \
                 --filter '.*/(Driver|APP)/.*' \
                 --exclude '.*/build/.*' \
                 --merge-mode-functions=separate \
-                --print-summary \
                 --fail-under-line 80 \
-                --html-details build/artifacts/gcov/gcovr/coverage.html \
+                --html-nested build/artifacts/gcov/gcovr/index.html \
+                --html-title "STM32 Data Logger - Couverture" \
                 --txt build/artifacts/gcov/gcovr/coverage.txt \
+                --print-summary \
                 build/gcov/out
-
-          gcovr --root ../.. \
-                --gcov-ignore-errors=no_working_dir_found \
-                --filter '.*/(Driver|APP)/.*' \
-                --exclude '.*/build/.*' \
-                --merge-mode-functions=separate \
-                --html build/artifacts/gcov/gcovr/index.html \
-                build/gcov/out
-
-        
-      - name: Test gcov direct
-        if: always()
-        run: |
-          gcov -b build/gcov/out/test_storage/storage.gcda || true
-          ls *.gcov 2>/dev/null | head
-
-      - name: Lister les rapports generes
-        if: always()
-        run: |
-          echo "=== Rapports disponibles ==="
-          find build/artifacts/gcov -type f -print || true
 
       - name: Publier le rapport de couverture
         if: always()
@@ -94,28 +57,3 @@ jobs:
           name: rapport-couverture
           path: tests_SASE/test_projet/build/artifacts/gcov/gcovr/
           if-no-files-found: warn
-
-
-  deploy-coverage:
-    needs: unit-tests
-    if: github.ref == 'refs/heads/main'
-    runs-on: ubuntu-24.04
-    permissions:
-      pages: write
-      id-token: write
-    environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
-    steps:
-      - name: Télécharger rapport
-        uses: actions/download-artifact@v4
-        with:
-          name: rapport-couverture
-          path: site
-      - name: Upload vers Pages
-        uses: actions/upload-pages-artifact@v3
-        with:
-          path: site
-      - name: Déployer sur Pages
-        id: deployment
-        uses: actions/deploy-pages@v4
