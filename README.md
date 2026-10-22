@@ -2,7 +2,7 @@
 
 [🇫🇷 Version française](README.FR.md)
 
-[![CI](https://github.com/Souber-ismael/Firmware-temps-r-el-STM32-FreeRTOS-Data-Logger-/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/Souber-ismael/Firmware-temps-r-el-STM32-FreeRTOS-Data-Logger-/actions/workflows/ci.yml)
+[[CI](https://github.[STRIPPED 92 bytes].yml/badge.svg)](https://github.com/Souber-ismael/Firmware-temps-r-el-STM32-FreeRTOS-Data-Logger-/actions/workflows/stm32-ci.yml)
 
 **[👉 Open the coverage report online](https://souber-ismael.github.io/Firmware-temps-r-el-STM32-FreeRTOS-Data-Logger-/)**
 
