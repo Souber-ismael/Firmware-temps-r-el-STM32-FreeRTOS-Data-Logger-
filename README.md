@@ -2,6 +2,8 @@
 
 [🇫🇷 Version française](README.FR.md)
 
+![CI](https://github.com/Souber-ismael/Firmware-temps-r-el-STM32-FreeRTOS-Data-Logger-/actions/workflows/ci.yml/badge.svg)
+
 A temperature and humidity data logger based on the **STM32F103RB** and **FreeRTOS**.  
 It measures, displays, and stores environmental data on a **microSD card**, with software supervision and a hardware watchdog that restarts the system in case of failure.
 
