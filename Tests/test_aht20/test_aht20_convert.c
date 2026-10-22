@@ -32,7 +32,7 @@ void test_conversion_25_degres_50_pourcent(void)
     );
 
     TEST_ASSERT_EQUAL(SENSOR_STATUS_OK, status);
-    TEST_ASSERT_EQUAL_INT16(24, temp_int);
+    TEST_ASSERT_EQUAL_INT16(25, temp_int);
     TEST_ASSERT_EQUAL_UINT8(0, temp_frac);
     TEST_ASSERT_EQUAL_UINT8(50, hum_int);
     TEST_ASSERT_EQUAL_UINT8(0, hum_frac);
