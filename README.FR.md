@@ -4,6 +4,8 @@
 
 ![CI](https://github.com/<user>/<repo>/actions/workflows/<workflow>.yml/badge.svg)
 
+**[👉 Ouvrir le rapport de couverture en ligne](https://souber-ismael.github.io/Firmware-temps-r-el-STM32-FreeRTOS-Data-Logger-/)**
+
 Enregistreur de température et d'humidité sur STM32F103RB, basé sur FreeRTOS. Il mesure, affiche et stocke les données sur carte microSD, avec une supervision logicielle et un watchdog matériel qui le remettent en route en cas de panne.
 
 Le projet vise une démarche proche de l'industrie : drivers écrits sans bibliothèque tierce, gestion explicite de chaque cas d'erreur, tests par injection de pannes.
