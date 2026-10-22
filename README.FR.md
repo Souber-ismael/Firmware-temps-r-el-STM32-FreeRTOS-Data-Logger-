@@ -2,7 +2,7 @@
 
 [🇬🇧 English version](README.md)
 
-![CI](https://github.com/<user>/<repo>/actions/workflows/<workflow>.yml/badge.svg)
+![CI](https://github.com/Souber-ismael/Firmware-temps-r-el-STM32-FreeRTOS-Data-Logger-/actions/workflows/ci.yml/badge.svg)
 
 **[👉 Ouvrir le rapport de couverture en ligne](https://souber-ismael.github.io/Firmware-temps-r-el-STM32-FreeRTOS-Data-Logger-/)**
 
