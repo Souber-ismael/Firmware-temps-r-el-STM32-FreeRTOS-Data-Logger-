@@ -329,6 +329,3 @@ To be completed:
 - STM32F1 firmware package version
 - Flashing procedure
 
-## License
-
-To be defined.
