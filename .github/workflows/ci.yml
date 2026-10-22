@@ -93,3 +93,28 @@ jobs:
           name: rapport-couverture
           path: tests_SASE/test_projet/build/artifacts/gcov/gcovr/
           if-no-files-found: warn
+
+
+  deploy-coverage:
+    needs: unit-tests
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-24.04
+    permissions:
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Télécharger rapport
+        uses: actions/download-artifact@v4
+        with:
+          name: rapport-couverture
+          path: site
+      - name: Upload vers Pages
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: site
+      - name: Déployer sur Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
